@@ -1254,6 +1254,11 @@ function openOb(){ ob.step=1; ob.name=''; ob.mode='base'; drawOb(); $('#obOv').c
 /* ---------- inicio ---------- */
 rollDay(); save(); applyStatic(); renderAll(); tick();
 // con un solo perfil y una sola rutina no hace falta preguntar "¿quién?"
+/* ---------- sin internet: guarda la app en el dispositivo ---------- */
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener('load',()=>{ navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{}); });
+}
+
 if(!S.setup) openOb();
 else if(!(S.profiles.length===1 && S.profiles[0].routines.length===1)) openUsers();
 })();
