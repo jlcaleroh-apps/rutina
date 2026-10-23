@@ -54,8 +54,11 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
 /* RELOJ */
 .dialarea{position:relative;flex:1;min-height:0}
 .dialarea svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.adultpill{align-self:center;margin-top:8px;background:#f1f2f9;color:var(--muted);font-weight:700;font-size:14px;padding:11px 18px;border-radius:999px;font-variant-numeric:tabular-nums}
-.adultpill:active{background:#e4e7f4}
+.adultpill{align-self:center;margin-top:8px;display:inline-flex;align-items:center;gap:10px;max-width:100%;background:#fff;color:var(--muted);font-weight:700;font-size:14px;padding:7px 14px 7px 7px;border-radius:999px;border:2px solid #d6dbee;box-shadow:0 2px 0 #d6dbee;font-variant-numeric:tabular-nums}
+.adultpill:active{transform:translateY(1px);box-shadow:0 1px 0 #d6dbee;background:#f4f6fd}
+.adultpill .ap-tag{display:inline-flex;align-items:center;gap:5px;background:#eef3ff;color:var(--accent);font-weight:900;font-size:15px;padding:6px 12px;border-radius:999px;flex:none}
+.adultpill .ap-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.adultpill .ap-chev{color:var(--accent);font-weight:900;font-size:18px;flex:none}
 .controls{display:flex;justify-content:center;margin-top:10px;flex:none}
 .btn{padding:16px 26px;border-radius:22px;font-weight:800;font-size:clamp(18px,2.6vw,24px);background:#eef1fb;box-shadow:0 3px 0 #d6dbee}
 .btn:active{transform:translateY(2px);box-shadow:0 1px 0 #d6dbee}
@@ -347,7 +350,7 @@ const I18N = {
   ob1_t:'¡Bienvenido a Mi Rutina!', ob1_p:'Configurémosla en 1 minuto. ¿Cómo se llama el niño o la niña que la va a usar?', ob1_ph:'Ej.: Sofía', ob1_more:'Si son varios, podrás agregar más después en ⚙️ Ajustes.',
   ob2_t:'¿Con qué rutina empezamos?', ob2_p:'Puedes cambiar actividades, minutos y colores cuando quieras.',
   ob2_a:'Rutina base · 60 min', ob2_ad:'7 actividades listas: movimiento, trazos, lectura, descanso, escritura, habla y cuento.', ob2_b:'Crear la mía', ob2_bd:'Empiezas con una actividad y la editas a tu gusto en Ajustes.',
-  ob3_t:'¡Todo listo, {n}! 🎉', ob3_p:'Así se usa:', ob3_1:'▶ Toca Empezar: el reloj muestra el tiempo que queda.', ob3_2:'✓ Al terminar cada actividad, marca la casilla.', ob3_3:'🔥 Cada rutina completa suma a la racha.', ob3_4:'👤 Adultos: la barrita gris bajo el reloj y ⚙️ Ajustes.',
+  ob3_t:'¡Todo listo, {n}! 🎉', ob3_p:'Así se usa:', ob3_1:'▶ Toca Empezar: el reloj muestra el tiempo que queda.', ob3_2:'✓ Al terminar cada actividad, marca la casilla.', ob3_3:'🔥 Cada rutina completa suma a la racha.', ob3_4:'👤 Adultos: el botón «Adulto» bajo el reloj y ⚙️ Ajustes.',
   ob3_go:'▶ Ir a mi rutina', ob3_edit:'⚙️ Ir a editar mi rutina', ob3_help:'❓ Ver los principios TDAH de la app', ob_name:'el niño o la niña', ob_myAct:'Mi primera actividad',
   nx_after:'Después:', nx_soon:'En 1 minuto:', nx_end:'¡Terminamos!', v_soon:'En un minuto: {a}.',
   u_add:'Agregar niño o niña', u_addPh:'Nombre', u_addOk:'✓ Agregar',
@@ -370,13 +373,13 @@ const I18N = {
 <li><i>2️⃣</i><div><b>Toca ▶ Empezar</b>El reloj corre y la voz anuncia la primera actividad.</div></li>
 <li><i>3️⃣</i><div><b>Marca cada actividad ✓</b>Al terminar, toca la casilla. La app pasa a la siguiente y felicita.</div></li>
 <li><i>4️⃣</i><div><b>Mira tus días 📅</b>Cada rutina completa suma a la racha 🔥.</div></li>
-<li><i>👤</i><div><b>Panel del adulto</b>Toca la barrita gris bajo el reloj para mover el tiempo, saltar actividades o reiniciar.</div></li>
+<li><i>👤</i><div><b>Panel del adulto</b>Toca el botón 👤 Adulto bajo el reloj para mover el tiempo, saltar actividades o reiniciar.</div></li>
 <li><i>⚙️</i><div><b>Ajustes</b>Crea perfiles y rutinas, cambia actividades, minutos, colores, voz e idioma. Puedes poner un PIN (opcional) para que solo los adultos entren.</div></li>
 </ol>
 <p class="note">💾 Todo se guarda solo en este dispositivo; no se envía a ningún servidor. Para usarla como app en el iPad: Safari → Compartir → Agregar a pantalla de inicio. Esta app es un apoyo y no sustituye la orientación de profesionales.</p>`,
   title:'Mi Rutina', hello:'¡Hola, {n}! 👋',
   start:'▶ Empezar', pause:'⏸ Pausa', resume:'▶ Seguir',
-  pill:'Total {a} · Actividad {b}', minShort:'{n} min',
+  pill:'Total {a} · Actividad {b}', pillTag:'👤 Adulto', minShort:'{n} min',
   ariaWho:'Cambiar de niño o niña', ariaDays:'Mis días', ariaSettings:'Ajustes', ariaAdult:'Panel del adulto',
   ariaTimer:'Temporizador', ariaPrev:'Mes anterior', ariaNext:'Mes siguiente', ariaStreak:'Racha: {n} días',
   pinTitle:'🔒 Solo para adultos', cancel:'Cancelar',
@@ -416,7 +419,7 @@ const I18N = {
   ob1_t:'Welcome to My Routine!', ob1_p:"Let's set it up in 1 minute. What's the name of the child who will use it?", ob1_ph:'E.g.: Sofia', ob1_more:'If there are several, you can add more later in ⚙️ Settings.',
   ob2_t:'Which routine do we start with?', ob2_p:'You can change activities, minutes and colors anytime.',
   ob2_a:'Base routine · 60 min', ob2_ad:'7 ready activities: movement, tracing, reading, break, writing, speech and story.', ob2_b:'Build my own', ob2_bd:'Start with one activity and edit it your way in Settings.',
-  ob3_t:'All set, {n}! 🎉', ob3_p:"Here's how it works:", ob3_1:'▶ Tap Start: the clock shows the time left.', ob3_2:'✓ When each activity is done, check the box.', ob3_3:'🔥 Every completed routine adds to the streak.', ob3_4:'👤 Adults: the small gray bar under the clock and ⚙️ Settings.',
+  ob3_t:'All set, {n}! 🎉', ob3_p:"Here's how it works:", ob3_1:'▶ Tap Start: the clock shows the time left.', ob3_2:'✓ When each activity is done, check the box.', ob3_3:'🔥 Every completed routine adds to the streak.', ob3_4:'👤 Adults: the «Adult» button under the clock and ⚙️ Settings.',
   ob3_go:'▶ Go to my routine', ob3_edit:'⚙️ Go edit my routine', ob3_help:'❓ See the ADHD principles behind the app', ob_name:'the child', ob_myAct:'My first activity',
   nx_after:'Next:', nx_soon:'In 1 minute:', nx_end:'All done!', v_soon:'In one minute: {a}.',
   u_add:'Add a child', u_addPh:'Name', u_addOk:'✓ Add',
@@ -439,13 +442,13 @@ const I18N = {
 <li><i>2️⃣</i><div><b>Tap ▶ Start</b>The clock runs and the voice announces the first activity.</div></li>
 <li><i>3️⃣</i><div><b>Check off each activity ✓</b>When done, tap the box. The app moves on and cheers.</div></li>
 <li><i>4️⃣</i><div><b>See your days 📅</b>Every completed routine adds to the 🔥 streak.</div></li>
-<li><i>👤</i><div><b>Adult panel</b>Tap the small gray bar under the clock to move time, skip activities or reset.</div></li>
+<li><i>👤</i><div><b>Adult panel</b>Tap the 👤 Adult button under the clock to move time, skip activities or reset.</div></li>
 <li><i>⚙️</i><div><b>Settings</b>Create profiles and routines, change activities, minutes, colors, voice and language. You can set an optional PIN so only adults get in.</div></li>
 </ol>
 <p class="note">💾 Everything is saved only on this device; nothing is sent to any server. To use it as an app on the iPad: Safari → Share → Add to Home Screen. This app is a support tool and does not replace professional guidance.</p>`,
   title:'My Routine', hello:'Hi, {n}! 👋',
   start:'▶ Start', pause:'⏸ Pause', resume:'▶ Resume',
-  pill:'Total {a} · Activity {b}', minShort:'{n} min',
+  pill:'Total {a} · Activity {b}', pillTag:'👤 Adult', minShort:'{n} min',
   ariaWho:'Switch child', ariaDays:'My days', ariaSettings:'Settings', ariaAdult:'Adult panel',
   ariaTimer:'Timer', ariaPrev:'Previous month', ariaNext:'Next month', ariaStreak:'Streak: {n} days',
   pinTitle:'🔒 Adults only', cancel:'Cancel',
@@ -743,7 +746,10 @@ function updateDial(){
 function updateAdult(){
   const tot=totalSec(), el=elapsed(), idx=curIndex(), b=bounds(), a=P().acts[idx];
   const rem=tot-el, actRem=b[idx]?b[idx].e-el:0;
-  $('#adultPill').textContent=t('pill',{a:mmss(rem),b:mmss(actRem)});
+  const pl=$('#adultPill'), txt=t('pill',{a:mmss(rem),b:mmss(actRem)});
+  if(!pl.querySelector('.ap-t')) pl.innerHTML=`<span class="ap-tag"></span><span class="ap-t"></span><span class="ap-chev">›</span>`;
+  pl.querySelector('.ap-tag').textContent=t('pillTag');
+  pl.querySelector('.ap-t').textContent=txt;
   if($('#apTotal')){
     $('#apTotal').textContent=mmss(rem); $('#apAct').textContent=mmss(actRem);
     $('#apNow').textContent = a ? a.icon+' '+a.name : t('a_done');
