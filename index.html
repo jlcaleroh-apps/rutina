@@ -85,6 +85,13 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
 .item.cur .tx small{font-size:clamp(16px,2.4vw,22px)}
 .item.cur .box{width:clamp(64px,9vw,84px);height:clamp(64px,9vw,84px)}
 .more{flex-basis:100%;padding-left:8px}
+.nextup{flex-basis:100%;display:flex;align-items:center;gap:10px;margin-top:2px;padding:10px 14px;border-radius:18px;background:rgba(255,255,255,.75);color:var(--muted);font-weight:800;font-size:clamp(16px,2.3vw,21px);transition:background .4s,color .4s,box-shadow .4s}
+.nextup>span{white-space:nowrap;flex:none}
+.nextup i{font-style:normal;font-size:1.4em;line-height:1;flex:none}
+.nextup b{flex:1;color:var(--ink);font-weight:900;min-width:0;line-height:1.2}
+.nextup.soon{background:#fff4d6;color:#8a5a00;box-shadow:0 0 0 3px #ffd166;animation:soonPulse 2s ease-in-out infinite}
+@keyframes soonPulse{50%{box-shadow:0 0 0 6px rgba(255,209,102,.45)}}
+@media (prefers-reduced-motion:reduce){.nextup.soon{animation:none}}
 .chips{display:flex;flex-wrap:wrap;gap:10px}
 .chip{background:#fff;color:var(--ink);border-radius:20px;padding:8px 16px;font-weight:900;font-size:clamp(22px,3.4vw,34px);display:flex;align-items:center;gap:10px;box-shadow:0 2px 6px rgba(40,50,90,.12)}
 .chip i{font-style:normal;font-size:1.25em}
@@ -342,6 +349,7 @@ const I18N = {
   ob2_a:'Rutina base · 60 min', ob2_ad:'7 actividades listas: movimiento, trazos, lectura, descanso, escritura, habla y cuento.', ob2_b:'Crear la mía', ob2_bd:'Empiezas con una actividad y la editas a tu gusto en Ajustes.',
   ob3_t:'¡Todo listo, {n}! 🎉', ob3_p:'Así se usa:', ob3_1:'▶ Toca Empezar: el reloj muestra el tiempo que queda.', ob3_2:'✓ Al terminar cada actividad, marca la casilla.', ob3_3:'🔥 Cada rutina completa suma a la racha.', ob3_4:'👤 Adultos: la barrita gris bajo el reloj y ⚙️ Ajustes.',
   ob3_go:'▶ Ir a mi rutina', ob3_edit:'⚙️ Ir a editar mi rutina', ob3_help:'❓ Ver los principios TDAH de la app', ob_name:'el niño o la niña', ob_myAct:'Mi primera actividad',
+  nx_after:'Después:', nx_soon:'En 1 minuto:', nx_end:'¡Terminamos!', v_soon:'En un minuto: {a}.',
   u_add:'Agregar niño o niña', u_addPh:'Nombre', u_addOk:'✓ Agregar',
   ariaHelp:'Cómo funciona', u_help:'❓ ¿Cómo funciona esta app?', help_title:'❓ Cómo funciona Mi Rutina', help_ok:'¡Entendido! ✓',
   help_html:`<p class="lead">Un reloj visual y una lista de pasos para que niños y niñas (con o sin TDAH) hagan su rutina con más autonomía y menos discusiones.</p>
@@ -410,6 +418,7 @@ const I18N = {
   ob2_a:'Base routine · 60 min', ob2_ad:'7 ready activities: movement, tracing, reading, break, writing, speech and story.', ob2_b:'Build my own', ob2_bd:'Start with one activity and edit it your way in Settings.',
   ob3_t:'All set, {n}! 🎉', ob3_p:"Here's how it works:", ob3_1:'▶ Tap Start: the clock shows the time left.', ob3_2:'✓ When each activity is done, check the box.', ob3_3:'🔥 Every completed routine adds to the streak.', ob3_4:'👤 Adults: the small gray bar under the clock and ⚙️ Settings.',
   ob3_go:'▶ Go to my routine', ob3_edit:'⚙️ Go edit my routine', ob3_help:'❓ See the ADHD principles behind the app', ob_name:'the child', ob_myAct:'My first activity',
+  nx_after:'Next:', nx_soon:'In 1 minute:', nx_end:'All done!', v_soon:'In one minute: {a}.',
   u_add:'Add a child', u_addPh:'Name', u_addOk:'✓ Add',
   ariaHelp:'How it works', u_help:'❓ How does this app work?', help_title:'❓ How My Routine works', help_ok:'Got it! ✓',
   help_html:`<p class="lead">A visual timer and a step list that help children (with or without ADHD) follow their routine with more independence and fewer arguments.</p>
@@ -758,6 +767,8 @@ function renderList(flash){
       const chips=parseItems(a.items).map(x=>`<div class="chip">${x.e?`<i>${esc(x.e)}</i>`:''}${esc(x.t)}</div>`).join('');
       const link=a.link?`<a class="linkbtn" href="${esc(a.link)}" target="_blank" rel="noopener">▶</a>`:'';
       if(chips||link) more=`<div class="more">${chips?`<div class="chips">${chips}</div>`:''}${link}</div>`;
+      const nx=p.acts[i+1];
+      more+=`<div class="nextup" id="nextUp"><span id="nextLbl">${t('nx_after')}</span><i>${nx?esc(nx.icon):'🎉'}</i><b>${nx?esc(nx.name):t('nx_end')}</b></div>`;
     }
     return `<div class="item ${done?'done':''} ${cur?'cur':''}" data-id="${a.id}" style="--c:${esc(a.color)}">
       <div class="ic">${esc(a.icon)}</div>
@@ -794,7 +805,25 @@ function tick(force){
     running=false; base=totalSec(); releaseWake(); renderButtons(); chime();
     say(t('v_done',{n:P().name}),{delay:700});
   }
+  updateNext(idx);
   updateDial(); updateAdult();
+}
+// aviso de transición: en el último minuto de una actividad se resalta "Después" y la voz lo anuncia una vez
+let soonIdx=-1;
+function updateNext(idx){
+  const el=$('#nextUp'); if(!el) return;
+  const b=bounds()[idx], acts=P().acts;
+  const left = b ? b.e - elapsed() : 0;
+  const soon = running && b && (b.e-b.s)>60 && left>0 && left<=60;
+  if(el.classList.contains('soon')!==soon){
+    el.classList.toggle('soon',soon);
+    const l=$('#nextLbl'); if(l) l.textContent=t(soon?'nx_soon':'nx_after');
+  }
+  if(soon && soonIdx!==idx){
+    soonIdx=idx;
+    const nx=acts[idx+1]; if(nx && left>50) say(t('v_soon',{a:nx.name}));
+  }
+  if(!soon && soonIdx===idx && left>60) soonIdx=-1;
 }
 setInterval(()=>tick(),200);
 
