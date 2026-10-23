@@ -97,6 +97,26 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
 #userOv{z-index:52}
 #pinOv{z-index:55}
 #helpOv{z-index:54}
+#obOv{z-index:53;background:linear-gradient(160deg,var(--bg1),var(--bg2))}
+.ob{text-align:center}
+.ob .step{color:var(--muted);font-weight:800;font-size:14px;letter-spacing:1px;margin:14px 0 4px}
+.ob .hero{font-size:64px;line-height:1;margin:8px 0}
+.ob h3{font-size:clamp(24px,4vw,32px);margin:6px 0 8px}
+.ob p{color:var(--muted);font-weight:700;font-size:17px;margin:0 0 16px;line-height:1.4}
+.ob input[type=text]{width:100%;border:3px solid var(--line);border-radius:18px;padding:16px;font-size:24px;font-weight:800;text-align:center;background:#fbfbfe}
+.ob input[type=text]:focus{outline:none;border-color:var(--accent)}
+.ob .opts{display:flex;flex-direction:column;gap:12px;text-align:left}
+.ob .opt{display:flex;gap:14px;align-items:center;padding:16px;border-radius:22px;background:#f6f7fc;border:4px solid transparent;text-align:left}
+.ob .opt.on{border-color:var(--accent);background:#eef3ff}
+.ob .opt i{font-style:normal;font-size:40px;flex:none}
+.ob .opt b{display:block;font-size:19px}
+.ob .opt small{color:var(--muted);font-weight:700;font-size:15px}
+.ob .tips{list-style:none;padding:0;margin:0 0 16px;display:flex;flex-direction:column;gap:8px;text-align:left}
+.ob .tips li{background:#f6f7fc;border-radius:16px;padding:10px 14px;font-weight:700;font-size:16px}
+.ob .nav{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.ob .pdots{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.ob .pdots span{width:10px;height:10px;border-radius:50%;background:#dde1f0}
+.ob .pdots span.on{background:var(--accent);width:26px;border-radius:99px}
 .help{font-size:17px;line-height:1.5;-webkit-user-select:text;user-select:text}
 .help h4{font-size:19px;margin:18px 0 8px}
 .help .lead{font-size:18px;color:var(--muted);font-weight:700;margin:0 0 6px}
@@ -224,6 +244,11 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
   </div>
 </div>
 
+<!-- BIENVENIDA (primera vez) -->
+<div class="overlay" id="obOv">
+  <div class="modal ob" style="width:min(94vw,520px)" id="obBody"></div>
+</div>
+
 <!-- AYUDA -->
 <div class="overlay" id="helpOv">
   <div class="modal wide">
@@ -298,6 +323,12 @@ const mmss = sec => { sec=Math.max(0,Math.ceil(sec)); return pad(Math.floor(sec/
 /* ---------- idiomas ---------- */
 const I18N = {
  es:{
+  ob_step:'PASO {a} DE {b}', ob_next:'Siguiente ▶', ob_back:'◀ Atrás',
+  ob1_t:'¡Bienvenido a Mi Rutina!', ob1_p:'Configurémosla en 1 minuto. ¿Cómo se llama el niño o la niña que la va a usar?', ob1_ph:'Ej.: Sofía', ob1_more:'Si son varios, podrás agregar más después en ⚙️ Ajustes.',
+  ob2_t:'¿Con qué rutina empezamos?', ob2_p:'Puedes cambiar actividades, minutos y colores cuando quieras.',
+  ob2_a:'Rutina base · 60 min', ob2_ad:'7 actividades listas: movimiento, trazos, lectura, descanso, escritura, habla y cuento.', ob2_b:'Crear la mía', ob2_bd:'Empiezas con una actividad y la editas a tu gusto en Ajustes.',
+  ob3_t:'¡Todo listo, {n}! 🎉', ob3_p:'Así se usa:', ob3_1:'▶ Toca Empezar: el reloj muestra el tiempo que queda.', ob3_2:'✓ Al terminar cada actividad, marca la casilla.', ob3_3:'🔥 Cada rutina completa suma a la racha.', ob3_4:'👤 Adultos: la barrita gris bajo el reloj y ⚙️ Ajustes.',
+  ob3_go:'▶ Ir a mi rutina', ob3_edit:'⚙️ Ir a editar mi rutina', ob3_help:'❓ Ver los principios TDAH de la app', ob_name:'el niño o la niña', ob_myAct:'Mi primera actividad',
   ariaHelp:'Cómo funciona', u_help:'❓ ¿Cómo funciona esta app?', help_title:'❓ Cómo funciona Mi Rutina', help_ok:'¡Entendido! ✓',
   help_html:`<p class="lead">Un reloj visual y una lista de pasos para que niños y niñas (con o sin TDAH) hagan su rutina con más autonomía y menos discusiones.</p>
 <h4>🧠 Principios para TDAH en los que se basa</h4>
@@ -359,6 +390,12 @@ const I18N = {
   al_pinSaved:'PIN guardado ✅', al_clear:'¿Borrar todos los días completados y la racha de {n}?'
  },
  en:{
+  ob_step:'STEP {a} OF {b}', ob_next:'Next ▶', ob_back:'◀ Back',
+  ob1_t:'Welcome to My Routine!', ob1_p:"Let's set it up in 1 minute. What's the name of the child who will use it?", ob1_ph:'E.g.: Sofia', ob1_more:'If there are several, you can add more later in ⚙️ Settings.',
+  ob2_t:'Which routine do we start with?', ob2_p:'You can change activities, minutes and colors anytime.',
+  ob2_a:'Base routine · 60 min', ob2_ad:'7 ready activities: movement, tracing, reading, break, writing, speech and story.', ob2_b:'Build my own', ob2_bd:'Start with one activity and edit it your way in Settings.',
+  ob3_t:'All set, {n}! 🎉', ob3_p:"Here's how it works:", ob3_1:'▶ Tap Start: the clock shows the time left.', ob3_2:'✓ When each activity is done, check the box.', ob3_3:'🔥 Every completed routine adds to the streak.', ob3_4:'👤 Adults: the small gray bar under the clock and ⚙️ Settings.',
+  ob3_go:'▶ Go to my routine', ob3_edit:'⚙️ Go edit my routine', ob3_help:'❓ See the ADHD principles behind the app', ob_name:'the child', ob_myAct:'My first activity',
   ariaHelp:'How it works', u_help:'❓ How does this app work?', help_title:'❓ How My Routine works', help_ok:'Got it! ✓',
   help_html:`<p class="lead">A visual timer and a step list that help children (with or without ADHD) follow their routine with more independence and fewer arguments.</p>
 <h4>🧠 ADHD principles behind it</h4>
@@ -479,10 +516,11 @@ function load(){
   try{ r = JSON.parse(localStorage.getItem(KEY)); }catch(e){}
   if(!(r && r.profiles && r.profiles.length)){
     const p = newProfile('Peque',null,'es');
-    r = {pin:'',pinV:1,helpSeen:false,sound:true,voiceOn:true,voiceBy:{},lang:'es',active:p.id,profiles:[p]};
+    r = {pin:'',pinV:1,helpSeen:false,setup:false,sound:true,voiceOn:true,voiceBy:{},lang:'es',active:p.id,profiles:[p]};
   }
   if(r.lang!=='es' && r.lang!=='en') r.lang='es';
   // migración: antes el PIN por defecto era 1234; ahora por defecto no hay PIN
+  if(r.setup===undefined) r.setup=true; // quien ya usaba la app no repite la bienvenida
   if(r.pinV===undefined){ if(r.pin==='1234') r.pin=''; r.pinV=1; }
   if(typeof r.pin!=='string' || !/^\d{4}$/.test(r.pin)) r.pin='';
   if(r.voiceOn===undefined) r.voiceOn=true;
@@ -558,6 +596,7 @@ function setLang(l){
   }));
   S.lang=l; save(); loadVoices(); applyStatic(); renderAll(); renderButtons();
   if($('#userOv').classList.contains('show')) drawUsers();
+  if($('#obOv').classList.contains('show')) drawOb();
   if($('#setOv').classList.contains('show')) drawSettings();
 }
 
@@ -1086,9 +1125,67 @@ $('#helpBtn').onclick=openHelp;
 $('#userHelp').onclick=openHelp;
 $('#helpClose').onclick=()=>{ $('#helpOv').classList.remove('show'); if(!S.helpSeen){ S.helpSeen=true; save(); } };
 
+/* ---------- bienvenida (primera vez) ---------- */
+const ob={step:1,name:'',mode:'base'};
+function drawOb(){
+  const dots=[1,2,3].map(i=>`<span class="${i===ob.step?'on':''}"></span>`).join('');
+  const st=`<div class="step">${t('ob_step',{a:ob.step,b:3})}</div>`;
+  let h='';
+  if(ob.step===1){
+    h=`<div class="langsw">${langHTML()}</div>${st}<div class="hero">👋</div>
+      <h3>${t('ob1_t')}</h3><p>${t('ob1_p')}</p>
+      <input type="text" id="obName" maxlength="24" autocomplete="off" placeholder="${esc(t('ob1_ph'))}" value="${esc(ob.name)}">
+      <p style="font-size:14px;margin:10px 0 0">${t('ob1_more')}</p>
+      <div class="nav"><button class="btn go" data-ob="next" id="obNext" ${ob.name.trim()?'':'disabled'}>${t('ob_next')}</button></div>`;
+  }else if(ob.step===2){
+    const o=(m,ic,a,d)=>`<button class="opt ${ob.mode===m?'on':''}" data-ob="mode" data-m="${m}"><i>${ic}</i><span><b>${t(a)}</b><small>${t(d)}</small></span></button>`;
+    h=`${st}<div class="hero">📋</div><h3>${t('ob2_t')}</h3><p>${t('ob2_p')}</p>
+      <div class="opts">${o('base','⏳','ob2_a','ob2_ad')}${o('own','✏️','ob2_b','ob2_bd')}</div>
+      <div class="nav"><button class="btn" data-ob="back">${t('ob_back')}</button><button class="btn go" data-ob="next">${t('ob_next')}</button></div>`;
+  }else{
+    h=`${st}<div class="hero">🚀</div><h3>${t('ob3_t',{n:esc(ob.name.trim())})}</h3><p>${t('ob3_p')}</p>
+      <ul class="tips"><li>${t('ob3_1')}</li><li>${t('ob3_2')}</li><li>${t('ob3_3')}</li><li>${t('ob3_4')}</li></ul>
+      <div class="nav"><button class="btn" data-ob="back">${t('ob_back')}</button>
+        <button class="btn go" data-ob="finish">${ob.mode==='own'?t('ob3_edit'):t('ob3_go')}</button></div>
+      <div style="margin-top:10px"><button class="linky" data-ob="help">${t('ob3_help')}</button></div>`;
+  }
+  $('#obBody').innerHTML=h+`<div class="pdots">${dots}</div>`;
+  const inp=$('#obName'); if(inp) setTimeout(()=>{ try{ inp.focus(); }catch(e){} },50);
+}
+function finishOb(){
+  const p=P(), rt=activeRoutine(p);
+  p.name=ob.name.trim()||p.name;
+  if(ob.mode==='own'){
+    rt.k=undefined; rt.name=t('r_def',{n:1});
+    rt.acts=[{id:uid(),icon:'⭐',name:t('ob_myAct'),min:10,color:'#6C8CFF',items:'',link:''}];
+  }
+  p.checks={date:dayStr(),done:[]};
+  S.setup=true; save(); resetClock(); lastIdx=-2;
+  $('#obOv').classList.remove('show');
+  applyStatic(); renderAll(); renderButtons(); tick(true);
+  if(ob.mode==='own') openSettings();
+}
+$('#obBody').addEventListener('input',e=>{
+  if(e.target.id==='obName'){ ob.name=e.target.value; const b=$('#obNext'); if(b) b.disabled=!ob.name.trim(); }
+});
+$('#obBody').addEventListener('keydown',e=>{
+  if(e.target.id==='obName' && e.key==='Enter' && ob.name.trim()){ ob.step=2; drawOb(); }
+});
+$('#obBody').addEventListener('click',e=>{
+  const l=e.target.closest('[data-lang]'); if(l){ setLang(l.dataset.lang); return; }
+  const b=e.target.closest('[data-ob]'); if(!b) return;
+  const a=b.dataset.ob;
+  if(a==='next'){ if(ob.step===1 && !ob.name.trim()) return; ob.step=Math.min(3,ob.step+1); drawOb(); }
+  else if(a==='back'){ ob.step=Math.max(1,ob.step-1); drawOb(); }
+  else if(a==='mode'){ ob.mode=b.dataset.m; drawOb(); }
+  else if(a==='help'){ openHelp(); }
+  else if(a==='finish'){ finishOb(); }
+});
+function openOb(){ ob.step=1; ob.name=''; ob.mode='base'; drawOb(); $('#obOv').classList.add('show'); }
+
 /* ---------- inicio ---------- */
-rollDay(); save(); applyStatic(); renderAll(); tick(); openUsers();
-if(!S.helpSeen) openHelp();
+rollDay(); save(); applyStatic(); renderAll(); tick();
+if(!S.setup) openOb(); else openUsers();
 })();
 </script>
 </body>

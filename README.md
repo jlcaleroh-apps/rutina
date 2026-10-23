@@ -6,4 +6,5 @@ Temporizador visual (tipo Time Timer de 60 min) con rutina de actividades, check
 - Para usarla: abre la página en Safari y toca **Compartir → Agregar a pantalla de inicio**.
 - Los perfiles, rutinas y el progreso se guardan solo en el navegador de cada dispositivo.
 - Sin PIN por defecto: cualquiera puede abrir ⚙️ Ajustes. Se puede poner un PIN opcional en ⚙️ Ajustes → General.
+- La primera vez, una bienvenida de 3 pasos pide el nombre del niño o la niña y la rutina inicial.
 - Botón ❓: explica los principios para TDAH en que se basa la app y cómo usarla (se muestra sola la primera vez).
