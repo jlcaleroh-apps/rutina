@@ -212,6 +212,22 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
 
 .sec{border-top:2px solid var(--line);padding-top:14px;margin-top:16px}
 .sec h4{margin:0 0 10px;font-size:19px}
+.sechead{width:100%;display:flex;align-items:center;gap:10px;background:none;padding:6px 0;text-align:left}
+.sechead h4{flex:1;margin:0}
+.sechead .sum{color:var(--muted);font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%}
+.sechead .chev2{flex:none;width:34px;height:34px;border-radius:50%;background:#eef1fb;display:grid;place-items:center;font-weight:900;color:var(--accent);transition:transform .2s}
+.sec.open .sechead .chev2{transform:rotate(90deg)}
+.sec .secbody{display:none;padding-top:10px}
+.sec.open .secbody{display:block}
+.acthead{width:100%;display:flex;align-items:center;gap:12px;background:none;padding:2px 0;text-align:left;font-weight:800;font-size:18px}
+.acthead .ai{font-size:28px;width:36px;text-align:center;flex:none}
+.acthead .an{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acthead .am{color:var(--muted);font-size:15px;flex:none}
+.acthead .sw{width:14px;height:14px;border-radius:50%;flex:none}
+.act .actbody{display:none;margin-top:12px}
+.act.open{border-color:var(--accent)}
+.act.open .actbody{display:block}
+.act{padding:10px 14px;margin-bottom:8px}
 .field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
 .field label{font-size:13px;font-weight:800;color:var(--muted)}
 .field input[type=text],.field input[type=number],.field input[type=password],.field input[type=url],.field textarea,.field select{
@@ -1098,7 +1114,7 @@ $('#calNext').onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} drawCal(); };
 
 /* ---------- ajustes ---------- */
 let dirty=false;
-function openSettings(){ dirty=false; drawSettings(); $('#setOv').classList.add('show'); }
+function openSettings(){ dirty=false; openAct=null; drawSettings(); $('#setOv').classList.add('show'); }
 $('#setClose').onclick=()=>{
   $('#setOv').classList.remove('show');
   save();
@@ -1131,8 +1147,9 @@ function drawSettings(){
 
   h+=routinesHTML(p);
   h+=`<div class="sec"><h4>${t('s_schedule',{r:esc(activeRoutine(p).name)})}</h4><div class="total" id="totalTxt"></div>`;
-  h+=p.acts.map((a,i)=>`<div class="act" data-aid="${a.id}">
-      <div class="grid2">
+  h+=p.acts.map((a,i)=>`<div class="act ${openAct===a.id?'open':''}" data-aid="${a.id}">
+      <button class="acthead" data-act="toggleact"><span class="ai">${esc(a.icon)}</span><span class="an">${esc(a.name)}</span><span class="am">${t('minShort',{n:a.min})}</span><span class="sw" style="background:${esc(a.color)}"></span><span class="chev2" style="flex:none;width:30px;height:30px;border-radius:50%;background:#eef1fb;display:grid;place-items:center;color:var(--accent);font-weight:900">${openAct===a.id?'▾':'▸'}</span></button>
+      <div class="actbody"><div class="grid2">
         <div class="field"><label>${t('f_icon')}</label><input type="text" data-f="icon" value="${esc(a.icon)}" maxlength="8"></div>
         <div class="field"><label>${t('f_name')}</label><input type="text" data-f="name" value="${esc(a.name)}" maxlength="40"></div>
         <div class="field"><label>${t('f_min')}</label><input type="number" data-f="min" value="${a.min}" min="1" max="120" inputmode="numeric"></div>
@@ -1144,7 +1161,7 @@ function drawSettings(){
         <button class="btn small" data-act="up" ${i===0?'disabled':''}>▲</button>
         <button class="btn small" data-act="down" ${i===p.acts.length-1?'disabled':''}>▼</button>
         <button class="btn small danger" data-act="delact">${t('remove')}</button>
-      </div></div>`).join('');
+      </div></div></div>`).join('');
   h+=`<button class="btn small primary" data-act="addact">${t('addAct')}</button>
       <button class="btn small" data-act="restore">${t('restore')}</button></div>`;
 
@@ -1167,8 +1184,38 @@ function drawSettings(){
         <button class="btn small danger" data-act="clearhist">${t('clearHist',{n:esc(p.name)})}</button>
         <button class="btn small danger" data-act="resetchecks">${t('resetChecks')}</button>
       </div></div>`;
-  $('#setBody').innerHTML=h; updTotal();
+  $('#setBody').innerHTML=h; updTotal(); foldSections(p);
 }
+// secciones plegables: solo se abre lo que el adulto toca (menos ruido visual)
+const openSecs=new Set(['sched']); let openAct=null;
+const SEC_KEYS=['lang','prof','rout','sched','voice','gen'];
+function foldSections(p){
+  const sums={
+    lang: S.lang==='es'?'Español':'English',
+    prof: S.profiles.map(x=>x.name).join(', '),
+    rout: activeRoutine(p).name,
+    sched: t('r_meta',{a:p.acts.length,m:totalSec()/60}),
+    voice: (S.voiceOn?'🔊':'🔇')+' '+(S.sound?'🔔':''),
+    gen: S.pin?'🔒 PIN':'🔓'
+  };
+  document.querySelectorAll('#setBody > .sec').forEach((sec,i)=>{
+    const k=SEC_KEYS[i]; if(!k) return; sec.dataset.sec=k;
+    const h4=sec.querySelector(':scope > h4'); if(!h4) return;
+    const body=document.createElement('div'); body.className='secbody';
+    while(h4.nextSibling) body.appendChild(h4.nextSibling);
+    const head=document.createElement('button'); head.className='sechead'; head.dataset.sec=k;
+    head.innerHTML=`<h4>${h4.innerHTML}</h4><span class="sum"></span><span class="chev2">▸</span>`;
+    head.querySelector('.sum').textContent=sums[k]||'';
+    h4.replaceWith(head); sec.appendChild(body);
+    sec.classList.toggle('open',openSecs.has(k));
+  });
+}
+$('#setBody').addEventListener('click',e=>{
+  const hd=e.target.closest('.sechead'); if(!hd) return;
+  const k=hd.dataset.sec, sec=hd.closest('.sec');
+  if(openSecs.has(k)) openSecs.delete(k); else openSecs.add(k);
+  sec.classList.toggle('open',openSecs.has(k));
+},true);
 function updTotal(){ const el=$('#totalTxt'); if(el){ const m=totalSec()/60; el.textContent=t('s_total',{m:m})+(m===60?t('s_totalOk'):t('s_totalAdj')); } }
 
 $('#setBody').addEventListener('input',e=>{
@@ -1178,6 +1225,8 @@ $('#setBody').addEventListener('input',e=>{
     const a=p.acts.find(x=>x.id===ar.dataset.aid); if(!a) return;
     if(tg.dataset.f==='min'){ a.min=Math.max(1,Math.min(120,parseInt(tg.value)||1)); updTotal(); }
     else a[tg.dataset.f]=tg.value;
+    const hd=ar.querySelector('.acthead');
+    if(hd){ hd.querySelector('.ai').textContent=a.icon; hd.querySelector('.an').textContent=a.name; hd.querySelector('.am').textContent=t('minShort',{n:a.min}); hd.querySelector('.sw').style.background=a.color; }
     dirty=true; save();
   }
   if(tg.dataset.act==='renprof'){
@@ -1229,7 +1278,8 @@ $('#setBody').addEventListener('click',e=>{
       if(p.acts.length<2){ alert(t('al_oneAct')); return; }
       if(!confirm(t('al_delAct'))) return;
       p.acts.splice(ai,1); dirty=true; break;
-    case 'addact': p.acts.push({id:uid(),icon:'⭐',name:t('newAct'),min:5,color:'#6C8CFF',items:'',link:''}); dirty=true; break;
+    case 'toggleact': openAct = openAct===ar.dataset.aid ? null : ar.dataset.aid; drawSettings(); return;
+    case 'addact':{ const na={id:uid(),icon:'⭐',name:t('newAct'),min:5,color:'#6C8CFF',items:'',link:''}; p.acts.push(na); openAct=na.id; dirty=true; break; }
     case 'restore':
       if(!confirm(t('al_restore'))) return;
       p.acts=defaultActs(S.lang); p.checks={date:dayStr(),done:[]}; dirty=true; break;
