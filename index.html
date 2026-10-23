@@ -469,7 +469,7 @@ const DEFACTS = {
   es:{
     move:{name:'Activación física',items:''},
     trace:{name:'Trazos para escribir',items:''},
-    read:{name:'Leemos juntos',items:'👩 mamá\n👨 papá\n🦆 pato\n💕 mi mamá me mima\n🔤 ma me mi mo mu\n🔡 pa pe pi po pu'},
+    read:{name:'Leemos juntos',items:''},
     rest:{name:'Descanso',items:''},
     write:{name:'Escribo en mi cuaderno',items:''},
     speech:{name:'Soplo y hablo',items:''},
@@ -478,13 +478,15 @@ const DEFACTS = {
   en:{
     move:{name:'Move your body',items:''},
     trace:{name:'Tracing lines',items:''},
-    read:{name:'Reading together',items:'👩 mom\n👨 dad\n🦆 duck\n💕 mom loves me\n🔤 ma me mi mo mu\n🔡 pa pe pi po pu'},
+    read:{name:'Reading together',items:''},
     rest:{name:'Break',items:''},
     write:{name:'Writing in my notebook',items:''},
     speech:{name:'Blow and talk',items:''},
     story:{name:'Story and song',items:''}
   }
 };
+// palabras que venían por defecto en versiones anteriores (se limpian si nadie las editó)
+const OLD_READ = ['👩 mamá\n👨 papá\n🦆 pato\n💕 mi mamá me mima\n🔤 ma me mi mo mu\n🔡 pa pe pi po pu','👩 mom\n👨 dad\n🦆 duck\n💕 mom loves me\n🔤 ma me mi mo mu\n🔡 pa pe pi po pu'];
 const BASE = [
   {k:'move',icon:'🤸',min:5,color:'#FF7043',link:''},
   {k:'trace',icon:'✏️',min:10,color:'#8E6CF0',link:''},
@@ -549,6 +551,7 @@ function load(){
         const k=Object.keys(DEFACTS.es).find(x=>DEFACTS.es[x].name===a.name || DEFACTS.en[x].name===a.name);
         if(k) a.k=k;
       }
+      if(a.k==='read' && OLD_READ.includes(a.items)) a.items='';
     }));
   });
   return r;
