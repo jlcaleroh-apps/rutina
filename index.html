@@ -58,6 +58,8 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
   header h1{font-size:20px}
   .who{padding:4px 4px 4px 0;gap:4px}
   .badge{padding:6px 10px;font-size:16px;letter-spacing:0}
+  .badge .sl{display:none}
+  .badge{gap:2px;padding:5px 8px;font-size:15px}
   .iconbtn{width:42px;height:42px;font-size:20px}
 }
 @media (max-width:380px){ header h1{font-size:18px} .iconbtn{width:38px;height:38px;font-size:18px} }
@@ -81,8 +83,16 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
 .btn.danger{background:#fde8e8;color:var(--danger);box-shadow:0 3px 0 #f3c4c6}
 
 /* LISTA */
-.progress{height:14px;background:#e6e9f5;border-radius:99px;overflow:hidden;margin:2px 0 14px;flex:none}
-.progress>div{height:100%;background:linear-gradient(90deg,#ffb703,#2fb55e);width:0;transition:width .4s}
+.progrow{display:flex;align-items:center;gap:12px;margin:2px 0 14px;flex:none}
+.progress{flex:1;height:20px;background:#e6e9f5;border-radius:99px;overflow:hidden}
+.progress>div{height:100%;background:linear-gradient(90deg,#ffb703,#2fb55e);width:0;transition:width .5s;border-radius:99px}
+.progtxt{flex:none;font-weight:900;font-size:clamp(18px,2.6vw,24px);white-space:nowrap;font-variant-numeric:tabular-nums;background:#fff8e1;color:#8a5a00;padding:6px 14px;border-radius:999px}
+.progtxt.all{background:#e3f6ea;color:#1f8a45}
+.bump{animation:bump .5s ease}
+@keyframes bump{40%{transform:scale(1.18)}}
+.badge{cursor:pointer;display:inline-flex;align-items:center;gap:6px;letter-spacing:0;font-weight:900}
+.badge .sl{font-size:.7em;color:var(--muted)}
+.badge:active{transform:scale(.96)}
 .list{scroll-padding:10px 0;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:10px;padding:4px}
 .item{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:12px 14px;border-radius:24px;background:#f6f7fc;border:3px solid transparent;cursor:pointer;transition:background .2s,padding .2s;flex:none}
 .item .ic{font-size:clamp(32px,5vw,46px);width:58px;text-align:center}
@@ -257,7 +267,7 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
 <div class="app">
   <header>
     <h1><button class="who" id="who" data-i18n-aria="ariaWho"><span id="hello">¡Hola!</span><span class="chev">▾</span></button></h1>
-    <div class="badge" id="streak">🌱</div>
+    <button class="badge" id="streak">🌱</button>
     <button class="iconbtn" id="helpBtn" data-i18n-aria="ariaHelp">❓</button>
     <button class="iconbtn" id="calBtn" data-i18n-aria="ariaDays">📅</button>
     <button class="iconbtn" id="gear" data-i18n-aria="ariaSettings">⚙️</button>
@@ -271,7 +281,7 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
     </section>
 
     <section class="panel">
-      <div class="progress"><div id="prog"></div></div>
+      <div class="progrow"><div class="progress"><div id="prog"></div></div><b class="progtxt" id="progTxt">⭐ 0</b></div>
       <div class="list" id="list"></div>
     </section>
   </div>
@@ -373,6 +383,7 @@ const I18N = {
   ob2_a:'Rutina base · 60 min', ob2_ad:'7 actividades listas: movimiento, trazos, lectura, descanso, escritura, habla y cuento.', ob2_b:'Crear la mía', ob2_bd:'Empiezas con una actividad y la editas a tu gusto en Ajustes.',
   ob3_t:'¡Todo listo, {n}! 🎉', ob3_p:'Así se usa:', ob3_1:'▶ Toca Empezar: el reloj muestra el tiempo que queda.', ob3_2:'✓ Al terminar cada actividad, marca la casilla. ¿Terminaste antes? Toca ⏭ y pasas a la siguiente.', ob3_3:'🔥 Cada rutina completa suma a la racha.', ob3_4:'👤 Adultos: el botón «Adulto» bajo el reloj y ⚙️ Ajustes.',
   ob3_go:'▶ Ir a mi rutina', ob3_edit:'⚙️ Ir a editar mi rutina', ob3_help:'❓ Ver los principios TDAH de la app', ob_name:'el niño o la niña', ob_myAct:'Mi primera actividad',
+  prog:'⭐ {a} de {b}', progAll:'🏆 {a} de {b}',
   nx_skip:'¡Listo! ⏭ Pasar a:', nx_ask:'¿Terminaste? Toca ✓', v_early:'¡Terminaste antes! ¡Muy bien!',
   nx_after:'Después:', nx_soon:'En 1 minuto:', nx_end:'¡Terminamos!', v_soon:'En un minuto: {a}.',
   u_add:'Agregar niño o niña', u_addPh:'Nombre', u_addOk:'✓ Agregar',
@@ -443,6 +454,7 @@ const I18N = {
   ob2_a:'Base routine · 60 min', ob2_ad:'7 ready activities: movement, tracing, reading, break, writing, speech and story.', ob2_b:'Build my own', ob2_bd:'Start with one activity and edit it your way in Settings.',
   ob3_t:'All set, {n}! 🎉', ob3_p:"Here's how it works:", ob3_1:'▶ Tap Start: the clock shows the time left.', ob3_2:'✓ When each activity is done, check the box. Finished early? Tap ⏭ to move on.', ob3_3:'🔥 Every completed routine adds to the streak.', ob3_4:'👤 Adults: the «Adult» button under the clock and ⚙️ Settings.',
   ob3_go:'▶ Go to my routine', ob3_edit:'⚙️ Go edit my routine', ob3_help:'❓ See the ADHD principles behind the app', ob_name:'the child', ob_myAct:'My first activity',
+  prog:'⭐ {a} of {b}', progAll:'🏆 {a} of {b}',
   nx_skip:'Done! ⏭ Go to:', nx_ask:'Did you finish? Tap ✓', v_early:'You finished early! Great job!',
   nx_after:'Next:', nx_soon:'In 1 minute:', nx_end:'All done!', v_soon:'In one minute: {a}.',
   u_add:'Add a child', u_addPh:'Name', u_addOk:'✓ Add',
@@ -787,6 +799,7 @@ function parseItems(txt){
     return m?{e:m[1],t:m[2]}:{e:'',t:l};
   });
 }
+let lastProg=-1;
 function renderList(flash){
   const p=P(), idx=curIndex();
   $('#list').innerHTML=p.acts.map((a,i)=>{
@@ -809,10 +822,16 @@ function renderList(flash){
   if(c){ if(flash) c.classList.add('flash'); c.scrollIntoView({block:'nearest',behavior:flash?'smooth':'auto'}); }
   const n=p.checks.done.filter(id=>p.acts.some(a=>a.id===id)).length;
   $('#prog').style.width = (p.acts.length? n/p.acts.length*100:0)+'%';
+  const pt=$('#progTxt'), all=p.acts.length>0 && n===p.acts.length;
+  pt.textContent=t(all?'progAll':'prog',{a:n,b:p.acts.length}); pt.classList.toggle('all',all);
+  if(lastProg>=0 && n>lastProg){ pt.classList.remove('bump'); void pt.offsetWidth; pt.classList.add('bump'); }
+  lastProg=n;
 }
 function renderHeader(){
   const p=P(); $('#hello').textContent=t('hello',{n:p.name});
-  const s=streakNow(p); const el=$('#streak'); el.textContent=flames(s); el.setAttribute('aria-label',t('ariaStreak',{n:s}));
+  const s=streakNow(p), el=$('#streak');
+  el.innerHTML=`<span>${s>0?'🔥':'🌱'}</span><span class="sn">${s}</span><span class="sl">${esc(s===1?t('day'):t('days'))}</span>`;
+  el.setAttribute('aria-label',t('ariaStreak',{n:s}));
 }
 function renderButtons(){
   const b=$('#bStart');
@@ -1072,6 +1091,7 @@ function drawCal(){
     <small>${t('cal_sum',{c:cur,b:bestStreak(h),m:cnt,d:cnt===1?t('day'):t('days')})}</small>`;
 }
 $('#calBtn').onclick=openCal;
+$('#streak').onclick=openCal;
 $('#calClose').onclick=()=>$('#calOv').classList.remove('show');
 $('#calPrev').onclick=()=>{ calM--; if(calM<0){calM=11;calY--;} drawCal(); };
 $('#calNext').onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} drawCal(); };
