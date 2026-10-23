@@ -96,6 +96,16 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
 .overlay.show{display:flex}
 #userOv{z-index:52}
 #pinOv{z-index:55}
+#helpOv{z-index:54}
+.help{font-size:17px;line-height:1.5;-webkit-user-select:text;user-select:text}
+.help h4{font-size:19px;margin:18px 0 8px}
+.help .lead{font-size:18px;color:var(--muted);font-weight:700;margin:0 0 6px}
+.help ul,.help ol{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.help li{background:#f6f7fc;border-radius:16px;padding:10px 14px;display:flex;gap:12px;align-items:flex-start}
+.help li>i{font-style:normal;font-size:26px;line-height:1.1;flex:none;width:32px;text-align:center}
+.help li b{display:block}
+.help .note{margin-top:16px;font-size:14px;color:var(--muted);font-weight:700}
+.linky{background:none;color:var(--accent);font-weight:800;font-size:16px;text-decoration:underline;padding:6px}
 .modal{background:#fff;border-radius:30px;width:min(94vw,520px);max-height:92vh;overflow:auto;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .modal.wide{width:min(96vw,860px)}
 .modal h3{margin:0 0 12px;font-size:24px}
@@ -184,6 +194,7 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
   <header>
     <h1><button class="who" id="who" data-i18n-aria="ariaWho"><span id="hello">¡Hola!</span><span class="chev">▾</span></button></h1>
     <div class="badge" id="streak">🌱</div>
+    <button class="iconbtn" id="helpBtn" data-i18n-aria="ariaHelp">❓</button>
     <button class="iconbtn" id="calBtn" data-i18n-aria="ariaDays">📅</button>
     <button class="iconbtn" id="gear" data-i18n-aria="ariaSettings">⚙️</button>
   </header>
@@ -209,6 +220,15 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
     <h3 id="userTitle" data-i18n="u_title" style="text-align:center;font-size:clamp(26px,4vw,36px);margin-top:14px"></h3>
     <div class="users" id="userGrid"></div>
     <div style="text-align:center;margin-top:18px"><button class="btn small" id="userAdult" data-i18n="u_adult"></button></div>
+    <div style="text-align:center;margin-top:8px"><button class="linky" id="userHelp" data-i18n="u_help"></button></div>
+  </div>
+</div>
+
+<!-- AYUDA -->
+<div class="overlay" id="helpOv">
+  <div class="modal wide">
+    <div class="mhead"><h3 data-i18n="help_title"></h3><button class="btn small primary" id="helpClose" data-i18n="help_ok"></button></div>
+    <div class="help" id="helpBody"></div>
   </div>
 </div>
 
@@ -278,13 +298,36 @@ const mmss = sec => { sec=Math.max(0,Math.ceil(sec)); return pad(Math.floor(sec/
 /* ---------- idiomas ---------- */
 const I18N = {
  es:{
+  ariaHelp:'Cómo funciona', u_help:'❓ ¿Cómo funciona esta app?', help_title:'❓ Cómo funciona Mi Rutina', help_ok:'¡Entendido! ✓',
+  help_html:`<p class="lead">Un reloj visual y una lista de pasos para que niños y niñas (con o sin TDAH) hagan su rutina con más autonomía y menos discusiones.</p>
+<h4>🧠 Principios para TDAH en los que se basa</h4>
+<ul>
+<li><i>⏳</i><div><b>Hacer visible el tiempo</b>Al cerebro con TDAH le cuesta "sentir" cuánto falta. El disco de color se va achicando: el tiempo se ve, no hay que calcularlo.</div></li>
+<li><i>🧩</i><div><b>Pasos pequeños y concretos</b>La rutina se divide en actividades cortas (5–15 min). Una tarea grande asusta; un paso pequeño se empieza.</div></li>
+<li><i>🎯</i><div><b>Una cosa a la vez</b>La actividad actual se ve grande; las terminadas se encogen. Menos ruido visual, más foco.</div></li>
+<li><i>🎉</i><div><b>Recompensa inmediata</b>Marcar ✓, la campanita, la voz que felicita, el confeti y la racha 🔥 dan motivación en el momento, no "después".</div></li>
+<li><i>🤸</i><div><b>Movimiento y descansos</b>La rutina base empieza con actividad física e incluye un descanso: moverse ayuda a regular la atención.</div></li>
+<li><i>🔁</i><div><b>Rutina predecible</b>El mismo orden cada día reduce la ansiedad y la cantidad de decisiones que hay que tomar.</div></li>
+<li><i>🖼️</i><div><b>Apoyo visual y auditivo</b>Emojis, palabras grandes y una voz que anuncia cada paso: menos instrucciones del adulto, más autonomía.</div></li>
+<li><i>🤝</i><div><b>Adulto que acompaña</b>El adulto ajusta el tiempo y la rutina sin interrumpir el reloj: acompaña en lugar de vigilar.</div></li>
+</ul>
+<h4>📱 Cómo usarla</h4>
+<ol>
+<li><i>1️⃣</i><div><b>Elige quién trabaja</b>Toca el nombre arriba a la izquierda para cambiar de niño o niña.</div></li>
+<li><i>2️⃣</i><div><b>Toca ▶ Empezar</b>El reloj corre y la voz anuncia la primera actividad.</div></li>
+<li><i>3️⃣</i><div><b>Marca cada actividad ✓</b>Al terminar, toca la casilla. La app pasa a la siguiente y felicita.</div></li>
+<li><i>4️⃣</i><div><b>Mira tus días 📅</b>Cada rutina completa suma a la racha 🔥.</div></li>
+<li><i>👤</i><div><b>Panel del adulto</b>Toca la barrita gris bajo el reloj para mover el tiempo, saltar actividades o reiniciar.</div></li>
+<li><i>⚙️</i><div><b>Ajustes</b>Crea perfiles y rutinas, cambia actividades, minutos, colores, voz e idioma. Puedes poner un PIN (opcional) para que solo los adultos entren.</div></li>
+</ol>
+<p class="note">💾 Todo se guarda solo en este dispositivo; no se envía a ningún servidor. Para usarla como app en el iPad: Safari → Compartir → Agregar a pantalla de inicio. Esta app es un apoyo y no sustituye la orientación de profesionales.</p>`,
   title:'Mi Rutina', hello:'¡Hola, {n}! 👋',
   start:'▶ Empezar', pause:'⏸ Pausa', resume:'▶ Seguir',
   pill:'Total {a} · Actividad {b}', minShort:'{n} min',
   ariaWho:'Cambiar de niño o niña', ariaDays:'Mis días', ariaSettings:'Ajustes', ariaAdult:'Panel del adulto',
   ariaTimer:'Temporizador', ariaPrev:'Mes anterior', ariaNext:'Mes siguiente', ariaStreak:'Racha: {n} días',
   pinTitle:'🔒 Solo para adultos', cancel:'Cancelar',
-  u_title:'¿Quién va a trabajar hoy?', u_adult:'🔒 Adultos: agregar o editar perfiles',
+  u_title:'¿Quién va a trabajar hoy?', u_adult:'👤 Adultos: agregar o editar perfiles',
   adultTitle:'Panel del adulto', closeOk:'Cerrar ✓', doneOk:'Listo ✓', settingsTitle:'⚙️ Ajustes',
   a_left:'Falta en total', a_act:'De esta actividad', a_move:'⏪ Mover el tiempo',
   a_m5:'⏪ −5 min', a_m1:'⏪ −1 min', a_p1:'⏩ +1 min', a_p5:'⏩ +5 min',
@@ -308,7 +351,7 @@ const I18N = {
   s_voice:'🔊 Voz y sonido', voiceChk:'Voz que da la bienvenida, anuncia cada actividad y se despide', voiceLbl:'Voz', testVoice:'▶ Probar voz',
   noVoices:'Este dispositivo no tiene voces en español. En el iPad se pueden descargar en Ajustes → Accesibilidad → Contenido hablado → Voces.',
   soundChk:'Campanita al cambiar de actividad',
-  s_general:'🔧 General', pinLbl:'Cambiar PIN (4 dígitos)', savePin:'Guardar PIN',
+  s_general:'🔧 General', pinLbl:'PIN de adulto (opcional, 4 dígitos)', savePin:'Guardar PIN', clearPin:'Quitar PIN', pinOff:'🔓 Sin PIN: cualquiera puede abrir Ajustes.', pinOn:'🔒 PIN activo: Ajustes y panel del adulto piden PIN.', al_pinCleared:'PIN quitado 🔓', al_pinClearQ:'¿Quitar el PIN? Cualquiera podrá abrir Ajustes.',
   clearHist:'Borrar días y racha de {n}', resetChecks:'Desmarcar tareas de hoy',
   al_oneProf:'Debe quedar al menos un perfil.', al_delProf:'¿Eliminar este perfil y sus días?',
   al_oneAct:'Debe quedar al menos una actividad.', al_delAct:'¿Quitar esta actividad?',
@@ -316,13 +359,36 @@ const I18N = {
   al_pinSaved:'PIN guardado ✅', al_clear:'¿Borrar todos los días completados y la racha de {n}?'
  },
  en:{
+  ariaHelp:'How it works', u_help:'❓ How does this app work?', help_title:'❓ How My Routine works', help_ok:'Got it! ✓',
+  help_html:`<p class="lead">A visual timer and a step list that help children (with or without ADHD) follow their routine with more independence and fewer arguments.</p>
+<h4>🧠 ADHD principles behind it</h4>
+<ul>
+<li><i>⏳</i><div><b>Make time visible</b>ADHD brains struggle to "feel" how much time is left. The colored disc shrinks, so time is seen, not calculated.</div></li>
+<li><i>🧩</i><div><b>Small, concrete steps</b>The routine is split into short activities (5–15 min). A big task feels scary; a small step gets started.</div></li>
+<li><i>🎯</i><div><b>One thing at a time</b>The current activity is big; finished ones shrink. Less visual noise, more focus.</div></li>
+<li><i>🎉</i><div><b>Immediate rewards</b>Checking ✓, the bell, the praising voice, confetti and the 🔥 streak give motivation right now, not "later".</div></li>
+<li><i>🤸</i><div><b>Movement and breaks</b>The base routine starts with physical activity and includes a break: moving helps regulate attention.</div></li>
+<li><i>🔁</i><div><b>Predictable routine</b>The same order every day lowers anxiety and the number of decisions to make.</div></li>
+<li><i>🖼️</i><div><b>Visual and audio support</b>Emojis, big words and a voice that announces each step: fewer adult instructions, more independence.</div></li>
+<li><i>🤝</i><div><b>An adult who supports</b>The adult adjusts time and routine without stopping the clock: supporting instead of policing.</div></li>
+</ul>
+<h4>📱 How to use it</h4>
+<ol>
+<li><i>1️⃣</i><div><b>Choose who is working</b>Tap the name at the top left to switch child.</div></li>
+<li><i>2️⃣</i><div><b>Tap ▶ Start</b>The clock runs and the voice announces the first activity.</div></li>
+<li><i>3️⃣</i><div><b>Check off each activity ✓</b>When done, tap the box. The app moves on and cheers.</div></li>
+<li><i>4️⃣</i><div><b>See your days 📅</b>Every completed routine adds to the 🔥 streak.</div></li>
+<li><i>👤</i><div><b>Adult panel</b>Tap the small gray bar under the clock to move time, skip activities or reset.</div></li>
+<li><i>⚙️</i><div><b>Settings</b>Create profiles and routines, change activities, minutes, colors, voice and language. You can set an optional PIN so only adults get in.</div></li>
+</ol>
+<p class="note">💾 Everything is saved only on this device; nothing is sent to any server. To use it as an app on the iPad: Safari → Share → Add to Home Screen. This app is a support tool and does not replace professional guidance.</p>`,
   title:'My Routine', hello:'Hi, {n}! 👋',
   start:'▶ Start', pause:'⏸ Pause', resume:'▶ Resume',
   pill:'Total {a} · Activity {b}', minShort:'{n} min',
   ariaWho:'Switch child', ariaDays:'My days', ariaSettings:'Settings', ariaAdult:'Adult panel',
   ariaTimer:'Timer', ariaPrev:'Previous month', ariaNext:'Next month', ariaStreak:'Streak: {n} days',
   pinTitle:'🔒 Adults only', cancel:'Cancel',
-  u_title:"Who's working today?", u_adult:'🔒 Adults: add or edit profiles',
+  u_title:"Who's working today?", u_adult:'👤 Adults: add or edit profiles',
   adultTitle:'Adult panel', closeOk:'Close ✓', doneOk:'Done ✓', settingsTitle:'⚙️ Settings',
   a_left:'Total time left', a_act:'This activity', a_move:'⏪ Move the time',
   a_m5:'⏪ −5 min', a_m1:'⏪ −1 min', a_p1:'⏩ +1 min', a_p5:'⏩ +5 min',
@@ -346,7 +412,7 @@ const I18N = {
   s_voice:'🔊 Voice and sound', voiceChk:'Voice that welcomes, announces each activity and says goodbye', voiceLbl:'Voice', testVoice:'▶ Test voice',
   noVoices:'This device has no English voices. On the iPad you can download them in Settings → Accessibility → Spoken Content → Voices.',
   soundChk:'Bell when the activity changes',
-  s_general:'🔧 General', pinLbl:'Change PIN (4 digits)', savePin:'Save PIN',
+  s_general:'🔧 General', pinLbl:'Adult PIN (optional, 4 digits)', savePin:'Save PIN', clearPin:'Remove PIN', pinOff:'🔓 No PIN: anyone can open Settings.', pinOn:'🔒 PIN on: Settings and the adult panel ask for the PIN.', al_pinCleared:'PIN removed 🔓', al_pinClearQ:'Remove the PIN? Anyone will be able to open Settings.',
   clearHist:"Delete {n}'s days and streak", resetChecks:"Uncheck today's tasks",
   al_oneProf:'At least one profile must remain.', al_delProf:'Delete this profile and its days?',
   al_oneAct:'At least one activity must remain.', al_delAct:'Remove this activity?',
@@ -413,9 +479,12 @@ function load(){
   try{ r = JSON.parse(localStorage.getItem(KEY)); }catch(e){}
   if(!(r && r.profiles && r.profiles.length)){
     const p = newProfile('Peque',null,'es');
-    r = {pin:'1234',sound:true,voiceOn:true,voiceBy:{},lang:'es',active:p.id,profiles:[p]};
+    r = {pin:'',pinV:1,helpSeen:false,sound:true,voiceOn:true,voiceBy:{},lang:'es',active:p.id,profiles:[p]};
   }
   if(r.lang!=='es' && r.lang!=='en') r.lang='es';
+  // migración: antes el PIN por defecto era 1234; ahora por defecto no hay PIN
+  if(r.pinV===undefined){ if(r.pin==='1234') r.pin=''; r.pinV=1; }
+  if(typeof r.pin!=='string' || !/^\d{4}$/.test(r.pin)) r.pin='';
   if(r.voiceOn===undefined) r.voiceOn=true;
   if(!r.voiceBy) r.voiceBy={};
   if(r.voice){ if(!r.voiceBy.es) r.voiceBy.es=r.voice; delete r.voice; }
@@ -754,6 +823,7 @@ const keysEl=$('#keys');
 keysEl.innerHTML=[1,2,3,4,5,6,7,8,9,'⌫',0,'✓'].map(k=>`<button data-k="${k}">${k}</button>`).join('');
 function pinDraw(){ document.querySelectorAll('#pinDots span').forEach((d,i)=>d.classList.toggle('on',i<pinBuf.length)); }
 function requireAuth(cb){
+  if(!S.pin){ cb(); return; }
   if(Date.now()<unlockedUntil){ unlockedUntil=Date.now()+5*60e3; cb(); return; }
   pending=cb; pinBuf=''; pinDraw(); $('#pinOv').classList.add('show');
 }
@@ -919,10 +989,12 @@ function drawSettings(){
       <label class="switch" style="margin-top:12px"><input type="checkbox" id="soundChk" ${S.sound?'checked':''}> ${t('soundChk')}</label></div>`;
 
   h+=`<div class="sec"><h4>${t('s_general')}</h4>
+      <div class="total">${S.pin?t('pinOn'):t('pinOff')}</div>
       <div class="field" style="margin-top:6px;max-width:260px"><label>${t('pinLbl')}</label>
         <input type="password" id="newPin" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="••••"></div>
       <div class="btnrow">
         <button class="btn small" data-act="savepin">${t('savePin')}</button>
+        ${S.pin?`<button class="btn small" data-act="clearpin">${t('clearPin')}</button>`:''}
         <button class="btn small danger" data-act="clearhist">${t('clearHist',{n:esc(p.name)})}</button>
         <button class="btn small danger" data-act="resetchecks">${t('resetChecks')}</button>
       </div></div>`;
@@ -995,7 +1067,10 @@ $('#setBody').addEventListener('click',e=>{
     case 'savepin':{
       const v=$('#newPin').value;
       if(!/^\d{4}$/.test(v)){ alert(t('al_pin4')); return; }
-      S.pin=v; save(); alert(t('al_pinSaved')); $('#newPin').value=''; return; }
+      S.pin=v; save(); alert(t('al_pinSaved')); drawSettings(); return; }
+    case 'clearpin':
+      if(!confirm(t('al_pinClearQ'))) return;
+      S.pin=''; save(); alert(t('al_pinCleared')); drawSettings(); return;
     case 'clearhist':
       if(!confirm(t('al_clear',{n:p.name}))) return;
       p.history={}; break;
@@ -1005,8 +1080,15 @@ $('#setBody').addEventListener('click',e=>{
   save(); drawSettings();
 });
 
+/* ---------- ayuda ---------- */
+function openHelp(){ $('#helpBody').innerHTML=t('help_html'); $('#helpOv').classList.add('show'); }
+$('#helpBtn').onclick=openHelp;
+$('#userHelp').onclick=openHelp;
+$('#helpClose').onclick=()=>{ $('#helpOv').classList.remove('show'); if(!S.helpSeen){ S.helpSeen=true; save(); } };
+
 /* ---------- inicio ---------- */
 rollDay(); save(); applyStatic(); renderAll(); tick(); openUsers();
+if(!S.helpSeen) openHelp();
 })();
 </script>
 </body>
