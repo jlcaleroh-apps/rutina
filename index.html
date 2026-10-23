@@ -157,6 +157,12 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
 .usercell .userbtn{width:100%}
 .rchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .rchip{padding:9px 14px;font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.addcell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px 10px;border-radius:26px;background:#fff;border:4px dashed #cfd5ea;font-weight:900;font-size:clamp(18px,2.6vw,22px);color:var(--accent);min-height:100%}
+.addcell .plus{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:52px;background:#eef3ff;color:var(--accent)}
+.addcell:active{transform:scale(.97)}
+.addform{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:26px;background:#f6f7fc;border:4px solid var(--accent)}
+.addform input{border:2px solid var(--line);border-radius:14px;padding:12px;font-size:20px;font-weight:800;text-align:center;width:100%;background:#fff}
+.addform .btnrow{justify-content:center;margin-top:0}
 .avatar{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:48px;color:#fff;font-weight:900}
 .langsw{display:flex;gap:8px;justify-content:center}
 .langsw.left{justify-content:flex-start}
@@ -336,6 +342,7 @@ const I18N = {
   ob2_a:'Rutina base · 60 min', ob2_ad:'7 actividades listas: movimiento, trazos, lectura, descanso, escritura, habla y cuento.', ob2_b:'Crear la mía', ob2_bd:'Empiezas con una actividad y la editas a tu gusto en Ajustes.',
   ob3_t:'¡Todo listo, {n}! 🎉', ob3_p:'Así se usa:', ob3_1:'▶ Toca Empezar: el reloj muestra el tiempo que queda.', ob3_2:'✓ Al terminar cada actividad, marca la casilla.', ob3_3:'🔥 Cada rutina completa suma a la racha.', ob3_4:'👤 Adultos: la barrita gris bajo el reloj y ⚙️ Ajustes.',
   ob3_go:'▶ Ir a mi rutina', ob3_edit:'⚙️ Ir a editar mi rutina', ob3_help:'❓ Ver los principios TDAH de la app', ob_name:'el niño o la niña', ob_myAct:'Mi primera actividad',
+  u_add:'Agregar niño o niña', u_addPh:'Nombre', u_addOk:'✓ Agregar',
   ariaHelp:'Cómo funciona', u_help:'❓ ¿Cómo funciona esta app?', help_title:'❓ Cómo funciona Mi Rutina', help_ok:'¡Entendido! ✓',
   help_html:`<p class="lead">Un reloj visual y una lista de pasos para que niños y niñas (con o sin TDAH) hagan su rutina con más autonomía y menos discusiones.</p>
 <h4>🧠 Principios para TDAH en los que se basa</h4>
@@ -365,7 +372,7 @@ const I18N = {
   ariaWho:'Cambiar de niño o niña', ariaDays:'Mis días', ariaSettings:'Ajustes', ariaAdult:'Panel del adulto',
   ariaTimer:'Temporizador', ariaPrev:'Mes anterior', ariaNext:'Mes siguiente', ariaStreak:'Racha: {n} días',
   pinTitle:'🔒 Solo para adultos', cancel:'Cancelar',
-  u_title:'¿Quién va a trabajar hoy?', u_adult:'👤 Adultos: agregar o editar perfiles',
+  u_title:'¿Quién va a trabajar hoy?', u_adult:'⚙️ Adultos: editar perfiles y rutinas',
   adultTitle:'Panel del adulto', closeOk:'Cerrar ✓', doneOk:'Listo ✓', settingsTitle:'⚙️ Ajustes',
   a_left:'Falta en total', a_act:'De esta actividad', a_move:'⏪ Mover el tiempo',
   a_m5:'⏪ −5 min', a_m1:'⏪ −1 min', a_p1:'⏩ +1 min', a_p5:'⏩ +5 min',
@@ -403,6 +410,7 @@ const I18N = {
   ob2_a:'Base routine · 60 min', ob2_ad:'7 ready activities: movement, tracing, reading, break, writing, speech and story.', ob2_b:'Build my own', ob2_bd:'Start with one activity and edit it your way in Settings.',
   ob3_t:'All set, {n}! 🎉', ob3_p:"Here's how it works:", ob3_1:'▶ Tap Start: the clock shows the time left.', ob3_2:'✓ When each activity is done, check the box.', ob3_3:'🔥 Every completed routine adds to the streak.', ob3_4:'👤 Adults: the small gray bar under the clock and ⚙️ Settings.',
   ob3_go:'▶ Go to my routine', ob3_edit:'⚙️ Go edit my routine', ob3_help:'❓ See the ADHD principles behind the app', ob_name:'the child', ob_myAct:'My first activity',
+  u_add:'Add a child', u_addPh:'Name', u_addOk:'✓ Add',
   ariaHelp:'How it works', u_help:'❓ How does this app work?', help_title:'❓ How My Routine works', help_ok:'Got it! ✓',
   help_html:`<p class="lead">A visual timer and a step list that help children (with or without ADHD) follow their routine with more independence and fewer arguments.</p>
 <h4>🧠 ADHD principles behind it</h4>
@@ -432,7 +440,7 @@ const I18N = {
   ariaWho:'Switch child', ariaDays:'My days', ariaSettings:'Settings', ariaAdult:'Adult panel',
   ariaTimer:'Timer', ariaPrev:'Previous month', ariaNext:'Next month', ariaStreak:'Streak: {n} days',
   pinTitle:'🔒 Adults only', cancel:'Cancel',
-  u_title:"Who's working today?", u_adult:'👤 Adults: add or edit profiles',
+  u_title:"Who's working today?", u_adult:'⚙️ Adults: edit profiles and routines',
   adultTitle:'Adult panel', closeOk:'Close ✓', doneOk:'Done ✓', settingsTitle:'⚙️ Settings',
   a_left:'Total time left', a_act:'This activity', a_move:'⏪ Move the time',
   a_m5:'⏪ −5 min', a_m1:'⏪ −1 min', a_p1:'⏩ +1 min', a_p5:'⏩ +5 min',
@@ -846,9 +854,21 @@ function drawUsers(){
       : '';
     return `<div class="usercell"><button class="userbtn ${p.id===S.active?'on':''}" data-pid="${p.id}">
       <span class="avatar" style="background:${AV[i%AV.length]}">${esc(ini)}</span><span>${esc(p.name)}</span></button>${chips}</div>`;
-  }).join('');
+  }).join('') + (addingUser
+    ? `<div class="addform"><input type="text" id="uNewName" maxlength="24" autocomplete="off" placeholder="${esc(t('u_addPh'))}">
+        <div class="btnrow"><button class="btn small" data-u="cancel">${t('cancel')}</button><button class="btn small primary" data-u="save">${t('u_addOk')}</button></div></div>`
+    : `<button class="addcell" data-u="add"><span class="plus">+</span><span>${t('u_add')}</span></button>`);
+  const inp=$('#uNewName'); if(inp) setTimeout(()=>{ try{ inp.focus(); }catch(e){} },50);
 }
-function openUsers(){ drawUsers(); $('#userOv').classList.add('show'); }
+let addingUser=false;
+function addUser(){
+  const inp=$('#uNewName'), n=inp?inp.value.trim():'';
+  if(!n){ if(inp) inp.focus(); return; }
+  const np=newProfile(n,null,S.lang);
+  S.profiles.push(np); addingUser=false; save();
+  pickUser(np.id);
+}
+function openUsers(){ addingUser=false; drawUsers(); $('#userOv').classList.add('show'); }
 function pickUser(id,rid){
   const p=S.profiles.find(x=>x.id===id); if(!p) return;
   let changed=false;
@@ -859,9 +879,18 @@ function pickUser(id,rid){
   renderAll(); renderButtons(); tick(true);
 }
 $('#userGrid').addEventListener('click',e=>{
+  const u=e.target.closest('[data-u]');
+  if(u){
+    const a=u.dataset.u;
+    if(a==='add') requireAuth(()=>{ addingUser=true; drawUsers(); });
+    else if(a==='cancel'){ addingUser=false; drawUsers(); }
+    else if(a==='save') addUser();
+    return;
+  }
   const c=e.target.closest('.rchip'); if(c){ pickUser(c.dataset.pid,c.dataset.rid); return; }
   const b=e.target.closest('.userbtn'); if(b) pickUser(b.dataset.pid);
 });
+$('#userGrid').addEventListener('keydown',e=>{ if(e.target.id==='uNewName' && e.key==='Enter') addUser(); });
 $('#userLang').addEventListener('click',e=>{ const b=e.target.closest('[data-lang]'); if(b) setLang(b.dataset.lang); });
 $('#who').onclick=openUsers;
 $('#userAdult').onclick=()=>requireAuth(()=>{ $('#userOv').classList.remove('show'); fromUsers=true; openSettings(); });
@@ -1195,7 +1224,9 @@ function openOb(){ ob.step=1; ob.name=''; ob.mode='base'; drawOb(); $('#obOv').c
 
 /* ---------- inicio ---------- */
 rollDay(); save(); applyStatic(); renderAll(); tick();
-if(!S.setup) openOb(); else openUsers();
+// con un solo perfil y una sola rutina no hace falta preguntar "¿quién?"
+if(!S.setup) openOb();
+else if(!(S.profiles.length===1 && S.profiles[0].routines.length===1)) openUsers();
 })();
 </script>
 </body>
