@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mi Rutina">
+<meta name="theme-color" content="#fff7ec">
+<title>Mi Rutina</title>
+<style>
+:root{
+  --bg1:#fff7ec; --bg2:#e9f6ff; --ink:#2b2d42; --muted:#6b7089;
+  --card:#ffffff; --line:#e7e9f2; --accent:#4f7cff; --ok:#2fb55e; --danger:#e5484d;
+  --radius:28px; --shadow:0 8px 24px rgba(40,50,90,.10);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{
+  margin:0;height:100vh;height:100dvh;overflow:hidden;display:flex;
+  font-family: ui-rounded,"SF Pro Rounded","Nunito","Segoe UI",system-ui,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+  -webkit-user-select:none;user-select:none;
+  touch-action:manipulation;
+  overscroll-behavior:none;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulation}
+input,textarea,select{font:inherit;color:var(--ink);-webkit-user-select:text;user-select:text}
+
+.app{flex:1;min-height:0;width:100%;max-width:1280px;margin:0 auto;padding:14px 18px 18px;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex:none}
+header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-width:0}
+.who{background:none;padding:6px 12px 6px 0;border-radius:18px;font-weight:800;text-align:left;display:inline-flex;align-items:center;gap:8px;max-width:100%}
+.who #hello{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who .chev{font-size:.55em;color:var(--muted);flex:none}
+.who:active{background:rgba(255,255,255,.7)}
+.badge{background:var(--card);border-radius:999px;padding:8px 18px;font-size:clamp(20px,3vw,28px);box-shadow:var(--shadow);white-space:nowrap;letter-spacing:2px}
+.iconbtn{width:56px;height:56px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);font-size:26px;display:grid;place-items:center;flex:none}
+.iconbtn:active{transform:scale(.94)}
+
+/* Dos paneles simétricos: mismo ancho y mismo alto */
+.layout{flex:1;min-height:0;display:grid;gap:18px;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
+@media (orientation:landscape){ .layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr)} }
+.panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+
+/* RELOJ */
+.dialarea{position:relative;flex:1;min-height:0}
+.dialarea svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.adultpill{align-self:center;margin-top:8px;background:#f1f2f9;color:var(--muted);font-weight:700;font-size:14px;padding:11px 18px;border-radius:999px;font-variant-numeric:tabular-nums}
+.adultpill:active{background:#e4e7f4}
+.controls{display:flex;justify-content:center;margin-top:10px;flex:none}
+.btn{padding:16px 26px;border-radius:22px;font-weight:800;font-size:clamp(18px,2.6vw,24px);background:#eef1fb;box-shadow:0 3px 0 #d6dbee}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #d6dbee}
+.btn:disabled{opacity:.4}
+.btn.primary{background:var(--accent);color:#fff;box-shadow:0 3px 0 #3558c9}
+.btn.go{background:var(--ok);color:#fff;box-shadow:0 3px 0 #1f8a45;padding:16px 44px;font-size:clamp(22px,3.2vw,30px)}
+.btn.small{padding:10px 16px;font-size:16px;border-radius:16px}
+.btn.danger{background:#fde8e8;color:var(--danger);box-shadow:0 3px 0 #f3c4c6}
+
+/* LISTA */
+.progress{height:14px;background:#e6e9f5;border-radius:99px;overflow:hidden;margin:2px 0 14px;flex:none}
+.progress>div{height:100%;background:linear-gradient(90deg,#ffb703,#2fb55e);width:0;transition:width .4s}
+.list{scroll-padding:10px 0;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:10px;padding:4px}
+.item{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:12px 14px;border-radius:24px;background:#f6f7fc;border:3px solid transparent;cursor:pointer;transition:background .2s,padding .2s;flex:none}
+.item .ic{font-size:clamp(32px,5vw,46px);width:58px;text-align:center}
+.item .tx{flex:1;min-width:0}
+.item .tx b{display:block;font-size:clamp(18px,2.7vw,25px);line-height:1.15}
+.item .tx small{color:var(--muted);font-weight:800;font-size:clamp(14px,2vw,18px)}
+.box{width:clamp(52px,7vw,68px);height:clamp(52px,7vw,68px);border-radius:20px;border:4px solid #c9cde0;background:#fff;display:grid;place-items:center;font-size:clamp(30px,5vw,44px);color:transparent;flex:none;transition:all .15s}
+.item.done .box{background:var(--ok);border-color:var(--ok);color:#fff}
+.item.cur{background:#f0f6ff;border-color:var(--c);box-shadow:0 0 0 4px rgba(120,130,170,.18);padding:18px 16px}
+@supports (background:color-mix(in srgb,red 10%,white)){
+  .item.cur{background:color-mix(in srgb,var(--c) 12%,#fff);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 22%,transparent)}
+}
+.item.cur .ic{font-size:clamp(56px,9vw,88px);width:auto;min-width:92px}
+.item.cur .tx b{font-size:clamp(24px,4vw,38px)}
+.item.cur .tx small{font-size:clamp(16px,2.4vw,22px)}
+.item.cur .box{width:clamp(64px,9vw,84px);height:clamp(64px,9vw,84px)}
+.more{flex-basis:100%;padding-left:8px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{background:#fff;color:var(--ink);border-radius:20px;padding:8px 16px;font-weight:900;font-size:clamp(22px,3.4vw,34px);display:flex;align-items:center;gap:10px;box-shadow:0 2px 6px rgba(40,50,90,.12)}
+.chip i{font-style:normal;font-size:1.25em}
+.linkbtn{display:inline-block;margin-top:12px;background:var(--c);color:#fff;text-decoration:none;font-weight:900;padding:12px 22px;border-radius:18px;font-size:20px}
+.chips + .linkbtn{margin-top:14px}
+.item.done:not(.cur){padding:6px 14px;opacity:.6}
+.item.done:not(.cur) .ic{font-size:26px;width:40px}
+.item.done:not(.cur) .tx b{font-size:clamp(15px,2.2vw,19px);text-decoration:line-through}
+.item.done:not(.cur) .tx small{display:none}
+.item.done:not(.cur) .box{width:40px;height:40px;font-size:24px;border-radius:14px}
+.flash{animation:flash .9s ease}
+@keyframes flash{0%{transform:scale(.97)}40%{transform:scale(1.02)}100%{transform:scale(1)}}
+
+/* MODALES */
+.overlay{position:fixed;inset:0;background:rgba(30,35,70,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.overlay.show{display:flex}
+#userOv{z-index:52}
+#pinOv{z-index:55}
+.modal{background:#fff;border-radius:30px;width:min(94vw,520px);max-height:92vh;overflow:auto;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal.wide{width:min(96vw,860px)}
+.modal h3{margin:0 0 12px;font-size:24px}
+.mhead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.mhead h3{flex:1;margin:0}
+.dots{display:flex;gap:14px;justify-content:center;margin:10px 0 18px}
+.dots span{width:20px;height:20px;border-radius:50%;background:#dde1f0}
+.dots span.on{background:var(--accent)}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.keys button{height:68px;border-radius:20px;background:#eef1fb;font-size:28px;font-weight:800}
+.keys button:active{background:#dfe5fb}
+.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+
+/* Selector de usuario */
+.users{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:14px}
+.userbtn{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 10px;border-radius:26px;background:#f6f7fc;border:4px solid transparent;font-weight:900;font-size:clamp(20px,3vw,28px);min-width:0}
+.userbtn span:last-child{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.userbtn.on{border-color:var(--accent);background:#eef3ff}
+.userbtn:active{transform:scale(.97)}
+.usercell{display:flex;flex-direction:column;gap:8px;min-width:0}
+.usercell .userbtn{width:100%}
+.rchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.rchip{padding:9px 14px;font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avatar{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:48px;color:#fff;font-weight:900}
+.langsw{display:flex;gap:8px;justify-content:center}
+.langsw.left{justify-content:flex-start}
+.langbtn{padding:8px 18px;border-radius:999px;background:#eef1fb;font-weight:800;font-size:16px}
+.langbtn.on{background:var(--accent);color:#fff}
+
+.sec{border-top:2px solid var(--line);padding-top:14px;margin-top:16px}
+.sec h4{margin:0 0 10px;font-size:19px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.field label{font-size:13px;font-weight:800;color:var(--muted)}
+.field input[type=text],.field input[type=number],.field input[type=password],.field input[type=url],.field textarea,.field select{
+  border:2px solid var(--line);border-radius:14px;padding:11px 13px;font-size:17px;width:100%;background:#fbfbfe}
+.field textarea{min-height:64px;resize:vertical}
+.grid2{display:grid;grid-template-columns:90px 1fr 110px 70px;gap:10px;align-items:end}
+@media (max-width:640px){.grid2{grid-template-columns:80px 1fr}}
+.act{border:2px solid var(--line);border-radius:22px;padding:14px;margin-bottom:12px;background:#fcfcff}
+.act .tools{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+.profrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.profrow input[type=text]{flex:1;border:2px solid var(--line);border-radius:14px;padding:10px 12px;font-size:17px}
+.profrow .sel{width:44px;height:44px;border-radius:50%;background:#eef1fb;font-size:20px}
+.profrow .sel.on{background:var(--ok);color:#fff}
+.rmeta{color:var(--muted);font-weight:700;font-size:14px;white-space:nowrap}
+@media (max-width:640px){.rmeta{display:none}}
+.switch{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;margin-bottom:8px}
+.switch input{width:26px;height:26px}
+.total{font-weight:800;color:var(--muted);margin:6px 0}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+
+/* Panel del adulto */
+.apnow{font-size:22px;font-weight:900;margin:4px 0 10px}
+.aptimes{display:flex;gap:12px}
+.aptimes>div{flex:1;background:#f4f5fb;border-radius:18px;padding:10px 14px}
+.aptimes small{display:block;color:var(--muted);font-weight:800;font-size:13px}
+.aptimes b{font-size:34px;font-variant-numeric:tabular-nums}
+
+/* Calendario */
+.calnav{display:flex;align-items:center;gap:10px;margin:8px 0}
+.calnav b{flex:1;text-align:center;font-size:20px;text-transform:capitalize}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.calgrid .wd{text-align:center;font-weight:800;color:var(--muted);font-size:14px}
+.day{min-height:56px;border-radius:14px;background:#f6f7fc;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:26px;line-height:1}
+.day small{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:2px}
+.day.done{background:#e3f6ea}
+.day.today{outline:3px solid var(--accent)}
+.calsum{text-align:center;margin-top:14px}
+.calsum .fl{font-size:36px;letter-spacing:3px}
+.calsum small{display:block;color:var(--muted);font-weight:700;margin-top:4px}
+
+/* CELEBRACION */
+.celebrate{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(255,255,255,.7);backdrop-filter:blur(4px)}
+.celebrate.show{display:flex}
+.cbox{background:#fff;border-radius:36px;padding:32px 40px;text-align:center;box-shadow:var(--shadow);max-width:90vw}
+.cbox .big{font-size:96px}
+.cbox h2{font-size:clamp(28px,5vw,46px);margin:6px 0}
+.cbox p{font-size:clamp(28px,5vw,44px);margin:8px 0 18px;letter-spacing:4px}
+.conf{position:fixed;top:-40px;font-size:34px;z-index:61;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(540deg);opacity:.9}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1><button class="who" id="who" data-i18n-aria="ariaWho"><span id="hello">¡Hola!</span><span class="chev">▾</span></button></h1>
+    <div class="badge" id="streak">🌱</div>
+    <button class="iconbtn" id="calBtn" data-i18n-aria="ariaDays">📅</button>
+    <button class="iconbtn" id="gear" data-i18n-aria="ariaSettings">⚙️</button>
+  </header>
+
+  <div class="layout">
+    <section class="panel">
+      <div class="dialarea"><svg id="dial" viewBox="-125 -125 250 250" data-i18n-aria="ariaTimer"></svg></div>
+      <button class="adultpill" id="adultPill" data-i18n-aria="ariaAdult">Total 60:00 · Actividad 5:00</button>
+      <div class="controls"><button class="btn go" id="bStart">▶ Empezar</button></div>
+    </section>
+
+    <section class="panel">
+      <div class="progress"><div id="prog"></div></div>
+      <div class="list" id="list"></div>
+    </section>
+  </div>
+</div>
+
+<!-- USUARIO (al inicio) -->
+<div class="overlay" id="userOv">
+  <div class="modal" style="width:min(94vw,640px)">
+    <div class="langsw" id="userLang"></div>
+    <h3 id="userTitle" data-i18n="u_title" style="text-align:center;font-size:clamp(26px,4vw,36px);margin-top:14px"></h3>
+    <div class="users" id="userGrid"></div>
+    <div style="text-align:center;margin-top:18px"><button class="btn small" id="userAdult" data-i18n="u_adult"></button></div>
+  </div>
+</div>
+
+<!-- PIN -->
+<div class="overlay" id="pinOv">
+  <div class="modal" style="width:min(90vw,360px)">
+    <h3 style="text-align:center" data-i18n="pinTitle"></h3>
+    <div class="dots" id="pinDots"><span></span><span></span><span></span><span></span></div>
+    <div class="keys" id="keys"></div>
+    <div style="text-align:center;margin-top:14px"><button class="btn small" id="pinCancel" data-i18n="cancel"></button></div>
+  </div>
+</div>
+
+<!-- PANEL DEL ADULTO -->
+<div class="overlay" id="adultOv">
+  <div class="modal">
+    <div class="mhead"><h3 data-i18n="adultTitle"></h3><button class="btn small primary" id="adultClose" data-i18n="closeOk"></button></div>
+    <div id="adultBody"></div>
+  </div>
+</div>
+
+<!-- AJUSTES -->
+<div class="overlay" id="setOv">
+  <div class="modal wide">
+    <div class="mhead"><h3 data-i18n="settingsTitle"></h3><button class="btn primary" id="setClose" data-i18n="doneOk"></button></div>
+    <div id="setBody"></div>
+  </div>
+</div>
+
+<!-- CALENDARIO -->
+<div class="overlay" id="calOv">
+  <div class="modal" style="width:min(94vw,560px)">
+    <div class="mhead"><h3 id="calTitle">⭐</h3><button class="btn small primary" id="calClose" data-i18n="closeOk"></button></div>
+    <div class="calnav">
+      <button class="btn small" id="calPrev" data-i18n-aria="ariaPrev">◀</button>
+      <b id="calMonth"></b>
+      <button class="btn small" id="calNext" data-i18n-aria="ariaNext">▶</button>
+    </div>
+    <div class="calgrid" id="calGrid"></div>
+    <div class="calsum" id="calSum"></div>
+  </div>
+</div>
+
+<div class="celebrate" id="cel">
+  <div class="cbox">
+    <div class="big">🏆</div>
+    <h2 id="celTitle"></h2>
+    <p id="celText"></p>
+    <button class="btn go" id="celOk">🎉</button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* ---------- utilidades ---------- */
+const $ = s => document.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2,9);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const dayStr = (d=new Date()) => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parseDay = k => { const [y,m,d]=k.split('-').map(Number); return new Date(y,m-1,d,12); };
+const yesterday = () => { const d=new Date(); d.setDate(d.getDate()-1); return dayStr(d); };
+const flames = n => n<=0 ? '🌱' : '🔥'.repeat(Math.min(n,7)) + (n>7?'+':'');
+const mmss = sec => { sec=Math.max(0,Math.ceil(sec)); return pad(Math.floor(sec/60))+':'+pad(sec%60); };
+
+/* ---------- idiomas ---------- */
+const I18N = {
+ es:{
+  title:'Mi Rutina', hello:'¡Hola, {n}! 👋',
+  start:'▶ Empezar', pause:'⏸ Pausa', resume:'▶ Seguir',
+  pill:'Total {a} · Actividad {b}', minShort:'{n} min',
+  ariaWho:'Cambiar de niño o niña', ariaDays:'Mis días', ariaSettings:'Ajustes', ariaAdult:'Panel del adulto',
+  ariaTimer:'Temporizador', ariaPrev:'Mes anterior', ariaNext:'Mes siguiente', ariaStreak:'Racha: {n} días',
+  pinTitle:'🔒 Solo para adultos', cancel:'Cancelar',
+  u_title:'¿Quién va a trabajar hoy?', u_adult:'🔒 Adultos: agregar o editar perfiles',
+  adultTitle:'Panel del adulto', closeOk:'Cerrar ✓', doneOk:'Listo ✓', settingsTitle:'⚙️ Ajustes',
+  a_left:'Falta en total', a_act:'De esta actividad', a_move:'⏪ Mover el tiempo',
+  a_m5:'⏪ −5 min', a_m1:'⏪ −1 min', a_p1:'⏩ +1 min', a_p5:'⏩ +5 min',
+  a_acts:'Actividades', a_prev:'⏮ Anterior', a_next:'⏭ Siguiente', a_clock:'Reloj',
+  a_reset:'↺ Reiniciar', a_settings:'⚙️ Ajustes', a_done:'🎉 Terminamos', a_resetQ:'¿Reiniciar el reloj desde el principio?',
+  cal_title:'⭐ Mis días · {n}', wd:['L','M','M','J','V','S','D'],
+  months:['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],
+  cal_sum:'Racha actual: {c} · Mejor racha: {b} · Este mes: {m} {d}', day:'día', days:'días',
+  win_title:'¡Lo lograste, {n}!',
+  v_welcome:'¡Hola, {n}! Qué bueno verte. Vamos a empezar. Primero: {a}.',
+  v_praise:['¡Muy bien!','¡Excelente!','¡Bien hecho!','¡Sigue así!'],
+  v_next:'{p} Ahora toca: {a}.',
+  v_done:'¡Terminamos, {n}! ¡Qué bien trabajaste hoy! ¡Hasta mañana!',
+  v_win:'¡Lo lograste, {n}! ¡Eres increíble!',
+  v_test:'¡Hola, {n}! Esta es mi voz. Vamos a empezar.', v_test2:'¡Hola, {n}! Esta es mi voz.',
+  s_lang:'🌐 Idioma', s_profiles:'👧👦 Perfiles', s_useProfile:'Usar este perfil', s_newProfPh:'Nombre del nuevo niño o niña', s_add:'+ Agregar',
+  s_schedule:'🗓 Horario · {r}', r_title:'📋 Rutinas de {n}', r_use:'Usar esta rutina', r_meta:'{a} act. · {m} min', r_namePh:'Nombre de la nueva rutina', r_copy:'+ Copiar la actual', r_base:'+ Desde el horario base', r_def:'Rutina {n}', r_adult:'📋 Rutina', al_oneRout:'Debe quedar al menos una rutina.', al_delRout:'¿Eliminar esta rutina?', s_total:'Duración total: {m} min', s_totalOk:' ✅', s_totalAdj:' (el reloj se ajusta a este total)',
+  f_icon:'Icono', f_name:'Nombre', f_min:'Minutos', f_color:'Color',
+  f_items:'Palabras / imágenes grandes (una por línea: emoji + palabra)', f_link:'Enlace (video, juego…) opcional',
+  remove:'🗑 Quitar', addAct:'+ Agregar actividad', restore:'Restaurar horario base', newAct:'Nueva actividad',
+  s_voice:'🔊 Voz y sonido', voiceChk:'Voz que da la bienvenida, anuncia cada actividad y se despide', voiceLbl:'Voz', testVoice:'▶ Probar voz',
+  noVoices:'Este dispositivo no tiene voces en español. En el iPad se pueden descargar en Ajustes → Accesibilidad → Contenido hablado → Voces.',
+  soundChk:'Campanita al cambiar de actividad',
+  s_general:'🔧 General', pinLbl:'Cambiar PIN (4 dígitos)', savePin:'Guardar PIN',
+  clearHist:'Borrar días y racha de {n}', resetChecks:'Desmarcar tareas de hoy',
+  al_oneProf:'Debe quedar al menos un perfil.', al_delProf:'¿Eliminar este perfil y sus días?',
+  al_oneAct:'Debe quedar al menos una actividad.', al_delAct:'¿Quitar esta actividad?',
+  al_restore:'¿Volver al horario base de 60 minutos?', al_pin4:'El PIN debe tener exactamente 4 números.',
+  al_pinSaved:'PIN guardado ✅', al_clear:'¿Borrar todos los días completados y la racha de {n}?'
+ },
+ en:{
+  title:'My Routine', hello:'Hi, {n}! 👋',
+  start:'▶ Start', pause:'⏸ Pause', resume:'▶ Resume',
+  pill:'Total {a} · Activity {b}', minShort:'{n} min',
+  ariaWho:'Switch child', ariaDays:'My days', ariaSettings:'Settings', ariaAdult:'Adult panel',
+  ariaTimer:'Timer', ariaPrev:'Previous month', ariaNext:'Next month', ariaStreak:'Streak: {n} days',
+  pinTitle:'🔒 Adults only', cancel:'Cancel',
+  u_title:"Who's working today?", u_adult:'🔒 Adults: add or edit profiles',
+  adultTitle:'Adult panel', closeOk:'Close ✓', doneOk:'Done ✓', settingsTitle:'⚙️ Settings',
+  a_left:'Total time left', a_act:'This activity', a_move:'⏪ Move the time',
+  a_m5:'⏪ −5 min', a_m1:'⏪ −1 min', a_p1:'⏩ +1 min', a_p5:'⏩ +5 min',
+  a_acts:'Activities', a_prev:'⏮ Previous', a_next:'⏭ Next', a_clock:'Clock',
+  a_reset:'↺ Reset', a_settings:'⚙️ Settings', a_done:'🎉 All done', a_resetQ:'Reset the clock from the beginning?',
+  cal_title:'⭐ My days · {n}', wd:['M','T','W','T','F','S','S'],
+  months:['January','February','March','April','May','June','July','August','September','October','November','December'],
+  cal_sum:'Current streak: {c} · Best streak: {b} · This month: {m} {d}', day:'day', days:'days',
+  win_title:'You did it, {n}!',
+  v_welcome:"Hi, {n}! So good to see you. Let's get started. First: {a}.",
+  v_praise:['Great job!','Awesome!','Well done!','Keep it up!'],
+  v_next:"{p} Now it's time for: {a}.",
+  v_done:'All done, {n}! You worked so hard today! See you tomorrow!',
+  v_win:'You did it, {n}! You are amazing!',
+  v_test:"Hi, {n}! This is my voice. Let's get started.", v_test2:'Hi, {n}! This is my voice.',
+  s_lang:'🌐 Language', s_profiles:'👧👦 Profiles', s_useProfile:'Use this profile', s_newProfPh:"New child's name", s_add:'+ Add',
+  s_schedule:'🗓 Schedule · {r}', r_title:"📋 {n}'s routines", r_use:'Use this routine', r_meta:'{a} act. · {m} min', r_namePh:'New routine name', r_copy:'+ Copy the current one', r_base:'+ From the base schedule', r_def:'Routine {n}', r_adult:'📋 Routine', al_oneRout:'At least one routine must remain.', al_delRout:'Delete this routine?', s_total:'Total duration: {m} min', s_totalOk:' ✅', s_totalAdj:' (the clock adjusts to this total)',
+  f_icon:'Icon', f_name:'Name', f_min:'Minutes', f_color:'Color',
+  f_items:'Big words / pictures (one per line: emoji + word)', f_link:'Link (video, game…) optional',
+  remove:'🗑 Remove', addAct:'+ Add activity', restore:'Restore base schedule', newAct:'New activity',
+  s_voice:'🔊 Voice and sound', voiceChk:'Voice that welcomes, announces each activity and says goodbye', voiceLbl:'Voice', testVoice:'▶ Test voice',
+  noVoices:'This device has no English voices. On the iPad you can download them in Settings → Accessibility → Spoken Content → Voices.',
+  soundChk:'Bell when the activity changes',
+  s_general:'🔧 General', pinLbl:'Change PIN (4 digits)', savePin:'Save PIN',
+  clearHist:"Delete {n}'s days and streak", resetChecks:"Uncheck today's tasks",
+  al_oneProf:'At least one profile must remain.', al_delProf:'Delete this profile and its days?',
+  al_oneAct:'At least one activity must remain.', al_delAct:'Remove this activity?',
+  al_restore:'Go back to the base 60-minute schedule?', al_pin4:'The PIN must be exactly 4 digits.',
+  al_pinSaved:'PIN saved ✅', al_clear:"Delete all completed days and {n}'s streak?"
+ }
+};
+let S; // se asigna más abajo
+const t = (k,v) => {
+  let s = (S && I18N[S.lang] && I18N[S.lang][k]!==undefined) ? I18N[S.lang][k] : I18N.es[k];
+  if(typeof s==='string' && v) for(const x in v) s=s.split('{'+x+'}').join(v[x]);
+  return s;
+};
+
+/* ---------- actividades por defecto (en ambos idiomas) ---------- */
+const DEFACTS = {
+  es:{
+    move:{name:'Activación física',items:''},
+    trace:{name:'Trazos para escribir',items:''},
+    read:{name:'Leemos juntos',items:'👩 mamá\n👨 papá\n🦆 pato\n💕 mi mamá me mima\n🔤 ma me mi mo mu\n🔡 pa pe pi po pu'},
+    rest:{name:'Descanso',items:''},
+    write:{name:'Escribo en mi cuaderno',items:''},
+    speech:{name:'Soplo y hablo',items:''},
+    story:{name:'Cuento y canción',items:''}
+  },
+  en:{
+    move:{name:'Move your body',items:''},
+    trace:{name:'Tracing lines',items:''},
+    read:{name:'Reading together',items:'👩 mom\n👨 dad\n🦆 duck\n💕 mom loves me\n🔤 ma me mi mo mu\n🔡 pa pe pi po pu'},
+    rest:{name:'Break',items:''},
+    write:{name:'Writing in my notebook',items:''},
+    speech:{name:'Blow and talk',items:''},
+    story:{name:'Story and song',items:''}
+  }
+};
+const BASE = [
+  {k:'move',icon:'🤸',min:5,color:'#FF7043',link:''},
+  {k:'trace',icon:'✏️',min:10,color:'#8E6CF0',link:''},
+  {k:'read',icon:'📖',min:10,color:'#2E9CF0',link:''},
+  {k:'rest',icon:'💧',min:5,color:'#2EC4B6',link:''},
+  {k:'write',icon:'📝',min:15,color:'#F5A524',link:''},
+  {k:'speech',icon:'🫧',min:5,color:'#EC5FA0',link:''},
+  {k:'story',icon:'🎵',min:10,color:'#4CAF50',link:'https://www.youtube.com'}
+];
+const defaultActs = lang => BASE.map(b=>({id:uid(),k:b.k,icon:b.icon,name:DEFACTS[lang][b.k].name,min:b.min,color:b.color,items:DEFACTS[lang][b.k].items,link:b.link}));
+const RNAME = {es:'Rutina base',en:'Base routine'};
+const cloneActs = a => JSON.parse(JSON.stringify(a)).map(x=>({...x,id:uid()}));
+const activeRoutine = p => p.routines.find(r=>r.id===p.rid) || p.routines[0];
+// p.acts siempre apunta a las actividades de la rutina activa (no se guarda por separado)
+function attachActs(p){
+  Object.defineProperty(p,'acts',{configurable:true,enumerable:false,get(){ return activeRoutine(p).acts; },set(v){ activeRoutine(p).acts=v; }});
+}
+function newProfile(name, acts, lang, rname){
+  const l=lang||'es', rt={id:uid(),k:acts?undefined:'base',name:rname||RNAME[l],acts:acts||defaultActs(l)};
+  const p={id:uid(),name:name||'Peque',routines:[rt],rid:rt.id,history:{},checks:{date:dayStr(),done:[]}};
+  attachActs(p); return p;
+}
+
+/* ---------- datos ---------- */
+const KEY = 'timetimer.v1';
+S = load();
+function load(){
+  let r=null;
+  try{ r = JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+  if(!(r && r.profiles && r.profiles.length)){
+    const p = newProfile('Peque',null,'es');
+    r = {pin:'1234',sound:true,voiceOn:true,voiceBy:{},lang:'es',active:p.id,profiles:[p]};
+  }
+  if(r.lang!=='es' && r.lang!=='en') r.lang='es';
+  if(r.voiceOn===undefined) r.voiceOn=true;
+  if(!r.voiceBy) r.voiceBy={};
+  if(r.voice){ if(!r.voiceBy.es) r.voiceBy.es=r.voice; delete r.voice; }
+  r.profiles.forEach(p=>{
+    // migración: un solo horario -> lista de rutinas
+    if(!Array.isArray(p.routines) || !p.routines.length){
+      p.routines=[{id:uid(),k:'base',name:RNAME[r.lang],acts:Array.isArray(p.acts)?p.acts:defaultActs(r.lang)}];
+    }
+    delete p.acts;
+    if(!p.routines.some(x=>x.id===p.rid)) p.rid=p.routines[0].id;
+    attachActs(p);
+    if(!p.checks) p.checks={date:dayStr(),done:[]};
+    // migración: historial de días a partir de versiones anteriores
+    if(!p.history){
+      p.history={};
+      if(p.last && p.streak){
+        const d=parseDay(p.last);
+        for(let i=0;i<p.streak;i++){ p.history[dayStr(d)]=1; d.setDate(d.getDate()-1); }
+      }
+    }
+    // migración: reconocer las actividades por defecto para poder traducirlas
+    p.routines.forEach(rt=>rt.acts.forEach(a=>{
+      if(!a.k){
+        const k=Object.keys(DEFACTS.es).find(x=>DEFACTS.es[x].name===a.name || DEFACTS.en[x].name===a.name);
+        if(k) a.k=k;
+      }
+    }));
+  });
+  return r;
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+const P = () => S.profiles.find(p=>p.id===S.active) || S.profiles[0];
+function rollDay(){
+  S.profiles.forEach(p=>{ if(p.checks.date!==dayStr()) p.checks={date:dayStr(),done:[]}; });
+}
+function streakNow(p){
+  const h=p.history||{}, d=new Date(); d.setHours(12,0,0,0);
+  if(!h[dayStr(d)]) d.setDate(d.getDate()-1);
+  let n=0; while(h[dayStr(d)]){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+function bestStreak(h){
+  let best=0,cur=0,prev=null;
+  Object.keys(h).sort().forEach(k=>{
+    const d=parseDay(k);
+    cur = (prev && Math.round((d-prev)/864e5)===1) ? cur+1 : 1;
+    best=Math.max(best,cur); prev=d;
+  });
+  return best;
+}
+const totalSec = () => P().acts.reduce((a,x)=>a+x.min*60,0);
+
+function applyStatic(){
+  document.documentElement.lang=S.lang;
+  document.title=t('title');
+  document.querySelectorAll('[data-i18n]').forEach(e=>{ e.textContent=t(e.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(e=>{ e.setAttribute('aria-label',t(e.dataset.i18nAria)); });
+}
+const langHTML = () => ['es','en'].map(l=>`<button class="langbtn ${S.lang===l?'on':''}" data-act="lang" data-lang="${l}">${l==='es'?'Español':'English'}</button>`).join('');
+function setLang(l){
+  if(l===S.lang || !I18N[l]) return;
+  const old=S.lang;
+  S.profiles.forEach(p=>p.routines.forEach(rt=>{
+    if(rt.k==='base' && rt.name===RNAME[old]) rt.name=RNAME[l];
+    rt.acts.forEach(a=>{
+      if(!a.k) return;
+      const o=DEFACTS[old][a.k], n=DEFACTS[l][a.k]; if(!o||!n) return;
+      if(a.name===o.name) a.name=n.name;       // solo se traducen los textos que no se editaron
+      if(a.items===o.items) a.items=n.items;
+    });
+  }));
+  S.lang=l; save(); loadVoices(); applyStatic(); renderAll(); renderButtons();
+  if($('#userOv').classList.contains('show')) drawUsers();
+  if($('#setOv').classList.contains('show')) drawSettings();
+}
+
+/* ---------- temporizador ---------- */
+let running=false, base=0, startTs=0, lastIdx=-1, wake=null, praiseN=0;
+const elapsed = () => Math.min(totalSec(), base + (running ? (Date.now()-startTs)/1000 : 0));
+function setElapsed(s){ base=Math.max(0,Math.min(totalSec(),s)); startTs=Date.now(); }
+function bounds(){ let c=0; return P().acts.map(a=>{const s=c; c+=a.min*60; return {s,e:c};}); }
+function curIndex(){
+  const el=elapsed(), b=bounds();
+  for(let i=0;i<b.length;i++) if(el<b[i].e) return i;
+  return b.length; // terminó
+}
+function shift(sec){ setElapsed(elapsed()+sec); }
+function prevAct(){
+  const idx=curIndex(), b=bounds();
+  if(idx>=b.length) setElapsed(b[b.length-1].s);
+  else if(idx===0 || elapsed()-b[idx].s>3) setElapsed(b[idx].s);
+  else setElapsed(b[idx-1].s);
+}
+function nextAct(){ const i=curIndex(), b=bounds(); if(i<b.length) setElapsed(b[i].e); }
+function releaseWake(){ if(wake){ try{wake.release()}catch(e){} wake=null; } }
+function resetClock(){ running=false; base=0; releaseWake(); }
+
+/* ---------- sonido y voz ---------- */
+let actx=null;
+function getCtx(){
+  actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+  if(actx.state!=='running') actx.resume();
+  return actx;
+}
+function unlockAudio(){ try{ getCtx(); }catch(e){} } // Safari solo permite audio si se activa durante un toque
+document.addEventListener('pointerdown',unlockAudio);
+function chime(){
+  if(!S.sound) return;
+  try{
+    getCtx();
+    [660,880,1100].forEach((f,i)=>{
+      const o=actx.createOscillator(), g=actx.createGain();
+      o.type='sine'; o.frequency.value=f; o.connect(g); g.connect(actx.destination);
+      const tt=actx.currentTime+i*0.18;
+      g.gain.setValueAtTime(0,tt); g.gain.linearRampToValueAtTime(.25,tt+.03);
+      g.gain.exponentialRampToValueAtTime(.001,tt+.35);
+      o.start(tt); o.stop(tt+.4);
+    });
+  }catch(e){}
+}
+const hasTTS = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+let voices=[];
+function loadVoices(){
+  if(!hasTTS) return;
+  const re=new RegExp('^'+S.lang,'i');
+  voices=speechSynthesis.getVoices().filter(v=>re.test(v.lang));
+}
+if(hasTTS){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function pickVoice(){
+  const id=S.voiceBy[S.lang];
+  const pref = S.lang==='en' ? [/en[-_]US/i,/en[-_]GB/i] : [/es[-_]MX/i,/es[-_]US/i];
+  return voices.find(v=>v.voiceURI===id)
+    || pref.map(re=>voices.find(v=>re.test(v.lang))).find(Boolean)
+    || voices[0];
+}
+function say(text, opts){
+  opts=opts||{};
+  if(!hasTTS || (!S.voiceOn && !opts.force)) return;
+  const go=()=>{
+    try{
+      if(opts.polite && speechSynthesis.speaking) return;
+      if(speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text), v=pickVoice();
+      if(v){ u.voice=v; u.lang=v.lang; } else u.lang = S.lang==='en' ? 'en-US' : 'es-MX';
+      u.rate=.88; u.pitch=1.05;
+      speechSynthesis.speak(u);
+    }catch(e){}
+  };
+  if(opts.delay) setTimeout(go,opts.delay); else go();
+}
+function announceActivity(idx){
+  const a=P().acts[idx]; if(!a) return;
+  chime();
+  const pr=t('v_praise');
+  say(t('v_next',{p:pr[praiseN++%pr.length],a:a.name}),{delay:700});
+}
+async function lockScreen(){ try{ if(navigator.wakeLock) wake=await navigator.wakeLock.request('screen'); }catch(e){} }
+document.addEventListener('visibilitychange',()=>{ if(running && document.visibilityState==='visible') lockScreen(); });
+
+/* ---------- reloj SVG ---------- */
+const R=102; // radio del sector de color
+const pt = (deg,r) => { const a=deg*Math.PI/180; return [(-r*Math.sin(a)).toFixed(2),(-r*Math.cos(a)).toFixed(2)]; }; // grados antihorarios desde las 12
+function buildDial(){
+  let h='<circle r="121" fill="#fff" stroke="#e3e6f3" stroke-width="3"/>';
+  for(let k=0;k<12;k++){ // marcas cada 5 minutos, sin números
+    const [x1,y1]=pt(k*30,108),[x2,y2]=pt(k*30,116);
+    h+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#9aa0bd" stroke-width="3" stroke-linecap="round"/>`;
+  }
+  h+='<path id="wedge" d="" fill="#ff5a4f" opacity=".92"/>';
+  h+=`<line id="hand" x1="0" y1="0" x2="0" y2="-${R}" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>`;
+  h+='<circle r="32" fill="#fff" stroke="#e3e6f3" stroke-width="2"/><text id="center" y="2" text-anchor="middle" dominant-baseline="central" font-size="38"></text>';
+  $('#dial').innerHTML=h;
+}
+function updateDial(){
+  const tot=totalSec(), el=elapsed(), rem=tot-el, f=tot?rem/tot:0, idx=curIndex(), acts=P().acts;
+  const col = acts[idx] ? acts[idx].color : '#2fb55e';
+  const w=$('#wedge'); w.setAttribute('fill',col);
+  if(f<=0.0005) w.setAttribute('d','');
+  else if(f>=0.9995) w.setAttribute('d',`M0 0 m-${R} 0 a${R} ${R} 0 1 0 ${2*R} 0 a${R} ${R} 0 1 0 -${2*R} 0`);
+  else{
+    const ang=f*360, [x,y]=pt(ang,R);
+    w.setAttribute('d',`M0 0 L0 -${R} A${R} ${R} 0 ${ang>180?1:0} 0 ${x} ${y} Z`);
+  }
+  const [hx,hy]=pt(f*360,R); const hand=$('#hand'); hand.setAttribute('x2',hx); hand.setAttribute('y2',hy);
+  hand.style.display = (f<=0.0005||f>=0.9995)?'none':'';
+  $('#center').textContent = acts[idx] ? acts[idx].icon : '🎉';
+}
+
+/* ---------- reloj numérico para el adulto ---------- */
+function updateAdult(){
+  const tot=totalSec(), el=elapsed(), idx=curIndex(), b=bounds(), a=P().acts[idx];
+  const rem=tot-el, actRem=b[idx]?b[idx].e-el:0;
+  $('#adultPill').textContent=t('pill',{a:mmss(rem),b:mmss(actRem)});
+  if($('#apTotal')){
+    $('#apTotal').textContent=mmss(rem); $('#apAct').textContent=mmss(actRem);
+    $('#apNow').textContent = a ? a.icon+' '+a.name : t('a_done');
+    $('#apToggle').textContent = running ? t('pause') : (el>0 && el<tot ? t('resume') : t('start'));
+  }
+}
+
+/* ---------- vista principal ---------- */
+function parseItems(txt){
+  return String(txt||'').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const m=l.match(/^(\p{Extended_Pictographic}[️‍\p{Extended_Pictographic}]*)\s+(.*)$/u);
+    return m?{e:m[1],t:m[2]}:{e:'',t:l};
+  });
+}
+function renderList(flash){
+  const p=P(), idx=curIndex();
+  $('#list').innerHTML=p.acts.map((a,i)=>{
+    const done=p.checks.done.includes(a.id), cur=i===idx;
+    let more='';
+    if(cur){
+      const chips=parseItems(a.items).map(x=>`<div class="chip">${x.e?`<i>${esc(x.e)}</i>`:''}${esc(x.t)}</div>`).join('');
+      const link=a.link?`<a class="linkbtn" href="${esc(a.link)}" target="_blank" rel="noopener">▶</a>`:'';
+      if(chips||link) more=`<div class="more">${chips?`<div class="chips">${chips}</div>`:''}${link}</div>`;
+    }
+    return `<div class="item ${done?'done':''} ${cur?'cur':''}" data-id="${a.id}" style="--c:${esc(a.color)}">
+      <div class="ic">${esc(a.icon)}</div>
+      <div class="tx"><b>${esc(a.name)}</b><small>${t('minShort',{n:a.min})}</small></div>
+      <div class="box">✓</div>${more}</div>`;
+  }).join('');
+  const c=document.querySelector('.item.cur');
+  if(c){ if(flash) c.classList.add('flash'); c.scrollIntoView({block:'nearest',behavior:flash?'smooth':'auto'}); }
+  const n=p.checks.done.filter(id=>p.acts.some(a=>a.id===id)).length;
+  $('#prog').style.width = (p.acts.length? n/p.acts.length*100:0)+'%';
+}
+function renderHeader(){
+  const p=P(); $('#hello').textContent=t('hello',{n:p.name});
+  const s=streakNow(p); const el=$('#streak'); el.textContent=flames(s); el.setAttribute('aria-label',t('ariaStreak',{n:s}));
+}
+function renderButtons(){
+  const b=$('#bStart');
+  if(running) b.textContent=t('pause');
+  else if(elapsed()>0 && elapsed()<totalSec()) b.textContent=t('resume');
+  else b.textContent=t('start');
+}
+function renderAll(){ buildDial(); renderHeader(); renderList(); renderButtons(); updateDial(); updateAdult(); }
+
+function tick(force){
+  rollDay();
+  const idx=curIndex();
+  if(idx!==lastIdx || force===true){
+    const changed = lastIdx!==-1 && idx!==lastIdx;
+    lastIdx=idx;
+    renderList(changed);
+    if(changed && running) announceActivity(idx);
+  }
+  if(running && elapsed()>=totalSec()){
+    running=false; base=totalSec(); releaseWake(); renderButtons(); chime();
+    say(t('v_done',{n:P().name}),{delay:700});
+  }
+  updateDial(); updateAdult();
+}
+setInterval(()=>tick(),200);
+
+/* ---------- acciones ---------- */
+function toggleRun(){
+  if(running){ base=elapsed(); running=false; releaseWake(); }
+  else{
+    const fresh = elapsed()===0 || elapsed()>=totalSec();
+    if(elapsed()>=totalSec()) setElapsed(0);
+    startTs=Date.now(); running=true; lockScreen();
+    lastIdx=curIndex();
+    const a=P().acts[lastIdx];
+    if(fresh && a){ renderList(); say(t('v_welcome',{n:P().name,a:a.name})); }
+    else chime();
+  }
+  renderButtons(); tick(true);
+}
+$('#bStart').onclick=toggleRun;
+
+$('#list').addEventListener('click',e=>{
+  if(e.target.closest('a')) return;
+  const it=e.target.closest('.item'); if(!it) return;
+  const p=P(), id=it.dataset.id, i=p.checks.done.indexOf(id);
+  if(i>=0) p.checks.done.splice(i,1); else p.checks.done.push(id);
+  save(); renderList(); checkComplete();
+});
+function checkComplete(){
+  const p=P();
+  if(p.acts.length && p.acts.every(a=>p.checks.done.includes(a.id)) && !p.history[dayStr()]){
+    p.history[dayStr()]=1; save(); renderHeader();
+    celebrate();
+  }
+}
+function celebrate(){
+  const p=P(); $('#celTitle').textContent=t('win_title',{n:p.name});
+  $('#celText').textContent=flames(streakNow(p));
+  $('#cel').classList.add('show'); chime();
+  say(t('v_win',{n:p.name}),{polite:true,delay:700});
+  const em=['🎉','⭐','🌟','🎈','✨','🏆'];
+  for(let i=0;i<46;i++){
+    const s=document.createElement('span'); s.className='conf'; s.textContent=em[i%em.length];
+    s.style.left=Math.random()*100+'vw'; s.style.animationDuration=(2.2+Math.random()*2.2)+'s'; s.style.animationDelay=Math.random()*.8+'s';
+    document.body.appendChild(s); setTimeout(()=>s.remove(),5500);
+  }
+}
+$('#celOk').onclick=()=>$('#cel').classList.remove('show');
+
+/* ---------- selector de usuario ---------- */
+const AV=['#FF7043','#8E6CF0','#2E9CF0','#2EC4B6','#F5A524','#EC5FA0','#4CAF50'];
+let fromUsers=false;
+function drawUsers(){
+  $('#userLang').innerHTML=langHTML();
+  $('#userGrid').innerHTML=S.profiles.map((p,i)=>{
+    const ini=(Array.from(p.name.trim())[0]||'?').toUpperCase();
+    const chips = p.routines.length>1
+      ? `<div class="rchips">${p.routines.map(r=>`<button class="langbtn rchip ${r.id===p.rid?'on':''}" data-pid="${p.id}" data-rid="${r.id}" title="${esc(r.name)}">${esc(r.name)}</button>`).join('')}</div>`
+      : '';
+    return `<div class="usercell"><button class="userbtn ${p.id===S.active?'on':''}" data-pid="${p.id}">
+      <span class="avatar" style="background:${AV[i%AV.length]}">${esc(ini)}</span><span>${esc(p.name)}</span></button>${chips}</div>`;
+  }).join('');
+}
+function openUsers(){ drawUsers(); $('#userOv').classList.add('show'); }
+function pickUser(id,rid){
+  const p=S.profiles.find(x=>x.id===id); if(!p) return;
+  let changed=false;
+  if(rid && p.rid!==rid && p.routines.some(r=>r.id===rid)){ p.rid=rid; changed=true; }
+  if(id!==S.active){ S.active=id; changed=true; }
+  if(changed){ resetClock(); lastIdx=-2; }
+  save(); $('#userOv').classList.remove('show');
+  renderAll(); renderButtons(); tick(true);
+}
+$('#userGrid').addEventListener('click',e=>{
+  const c=e.target.closest('.rchip'); if(c){ pickUser(c.dataset.pid,c.dataset.rid); return; }
+  const b=e.target.closest('.userbtn'); if(b) pickUser(b.dataset.pid);
+});
+$('#userLang').addEventListener('click',e=>{ const b=e.target.closest('[data-lang]'); if(b) setLang(b.dataset.lang); });
+$('#who').onclick=openUsers;
+$('#userAdult').onclick=()=>requireAuth(()=>{ $('#userOv').classList.remove('show'); fromUsers=true; openSettings(); });
+
+/* ---------- PIN (se recuerda 5 minutos) ---------- */
+let pinBuf='', pending=null, unlockedUntil=0;
+const keysEl=$('#keys');
+keysEl.innerHTML=[1,2,3,4,5,6,7,8,9,'⌫',0,'✓'].map(k=>`<button data-k="${k}">${k}</button>`).join('');
+function pinDraw(){ document.querySelectorAll('#pinDots span').forEach((d,i)=>d.classList.toggle('on',i<pinBuf.length)); }
+function requireAuth(cb){
+  if(Date.now()<unlockedUntil){ unlockedUntil=Date.now()+5*60e3; cb(); return; }
+  pending=cb; pinBuf=''; pinDraw(); $('#pinOv').classList.add('show');
+}
+keysEl.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return; const k=b.dataset.k;
+  if(k==='⌫') pinBuf=pinBuf.slice(0,-1);
+  else if(k!=='✓' && pinBuf.length<4) pinBuf+=k;
+  pinDraw();
+  if(pinBuf.length===4 || k==='✓'){
+    if(pinBuf===S.pin){
+      $('#pinOv').classList.remove('show'); pinBuf=''; pinDraw();
+      unlockedUntil=Date.now()+5*60e3;
+      const cb=pending; pending=null; if(cb) cb();
+    }else{
+      const d=$('#pinDots'); d.classList.remove('shake'); void d.offsetWidth; d.classList.add('shake');
+      pinBuf=''; setTimeout(pinDraw,350);
+    }
+  }
+});
+$('#pinCancel').onclick=()=>{ pending=null; $('#pinOv').classList.remove('show'); };
+$('#gear').onclick=()=>requireAuth(openSettings);
+$('#adultPill').onclick=()=>requireAuth(openAdult);
+
+/* ---------- panel del adulto ---------- */
+function adultRoutinesHTML(){
+  const p=P(); if(p.routines.length<2) return '';
+  return `<div class="sec"><h4>${t('r_adult')}</h4><div class="btnrow">${p.routines.map(r=>`<button class="langbtn ${r.id===p.rid?'on':''}" data-act="rout" data-rid="${r.id}">${esc(r.name)}</button>`).join('')}</div></div>`;
+}
+function useRoutine(rid){
+  const p=P(); if(p.rid===rid) return;
+  p.rid=rid; save(); resetClock(); lastIdx=-2;
+  renderAll(); renderButtons(); tick(true); openAdult();
+}
+function openAdult(){
+  $('#adultBody').innerHTML=`
+    <div class="apnow" id="apNow"></div>
+    <div class="aptimes">
+      <div><small>${t('a_left')}</small><b id="apTotal">00:00</b></div>
+      <div><small>${t('a_act')}</small><b id="apAct">00:00</b></div>
+    </div>
+    <div class="sec"><h4>${t('a_move')}</h4>
+      <div class="btnrow">
+        <button class="btn small" data-act="shift" data-s="-300">${t('a_m5')}</button>
+        <button class="btn small" data-act="shift" data-s="-60">${t('a_m1')}</button>
+        <button class="btn small" data-act="shift" data-s="60">${t('a_p1')}</button>
+        <button class="btn small" data-act="shift" data-s="300">${t('a_p5')}</button>
+      </div></div>
+    <div class="sec"><h4>${t('a_acts')}</h4>
+      <div class="btnrow">
+        <button class="btn small" data-act="prev">${t('a_prev')}</button>
+        <button class="btn small" data-act="next">${t('a_next')}</button>
+      </div></div>
+    ${adultRoutinesHTML()}
+    <div class="sec"><h4>${t('a_clock')}</h4>
+      <div class="btnrow">
+        <button class="btn small primary" id="apToggle" data-act="toggle">${t('resume')}</button>
+        <button class="btn small danger" data-act="reset">${t('a_reset')}</button>
+        <button class="btn small" data-act="settings">${t('a_settings')}</button>
+      </div></div>`;
+  updateAdult(); $('#adultOv').classList.add('show');
+}
+$('#adultClose').onclick=()=>$('#adultOv').classList.remove('show');
+$('#adultBody').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b||!b.dataset.act) return;
+  switch(b.dataset.act){
+    case 'shift': shift(parseInt(b.dataset.s,10)); break;
+    case 'prev': prevAct(); break;
+    case 'next': nextAct(); break;
+    case 'rout': useRoutine(b.dataset.rid); return;
+    case 'toggle': toggleRun(); return;
+    case 'reset':
+      if(!confirm(t('a_resetQ'))) return;
+      resetClock(); break;
+    case 'settings': $('#adultOv').classList.remove('show'); openSettings(); return;
+  }
+  renderButtons(); tick(true);
+});
+
+/* ---------- calendario de días ---------- */
+let calY=0, calM=0;
+function openCal(){ const d=new Date(); calY=d.getFullYear(); calM=d.getMonth(); drawCal(); $('#calOv').classList.add('show'); }
+function drawCal(){
+  const p=P(), h=p.history||{};
+  $('#calTitle').textContent=t('cal_title',{n:p.name});
+  $('#calMonth').textContent=t('months')[calM]+' '+calY;
+  const first=new Date(calY,calM,1), lead=(first.getDay()+6)%7, n=new Date(calY,calM+1,0).getDate();
+  let g=t('wd').map(w=>`<div class="wd">${w}</div>`).join('');
+  for(let i=0;i<lead;i++) g+='<div></div>';
+  const today=dayStr(); let cnt=0;
+  for(let d=1; d<=n; d++){
+    const key=calY+'-'+pad(calM+1)+'-'+pad(d), done=!!h[key]; if(done) cnt++;
+    g+=`<div class="day ${done?'done':''} ${key===today?'today':''}"><small>${d}</small>${done?'⭐':''}</div>`;
+  }
+  $('#calGrid').innerHTML=g;
+  const cur=streakNow(p);
+  $('#calSum').innerHTML=`<div class="fl">${flames(cur)}</div>
+    <small>${t('cal_sum',{c:cur,b:bestStreak(h),m:cnt,d:cnt===1?t('day'):t('days')})}</small>`;
+}
+$('#calBtn').onclick=openCal;
+$('#calClose').onclick=()=>$('#calOv').classList.remove('show');
+$('#calPrev').onclick=()=>{ calM--; if(calM<0){calM=11;calY--;} drawCal(); };
+$('#calNext').onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} drawCal(); };
+
+/* ---------- ajustes ---------- */
+let dirty=false;
+function openSettings(){ dirty=false; drawSettings(); $('#setOv').classList.add('show'); }
+$('#setClose').onclick=()=>{
+  $('#setOv').classList.remove('show');
+  save();
+  if(dirty) resetClock();
+  renderAll(); renderButtons(); tick(true);
+  if(fromUsers){ fromUsers=false; openUsers(); }
+};
+function routinesHTML(p){
+  let h=`<div class="sec"><h4>${t('r_title',{n:esc(p.name)})}</h4>`;
+  h+=p.routines.map(r=>`<div class="profrow" data-rid="${r.id}">
+      <button class="sel ${r.id===p.rid?'on':''}" data-act="selrout" title="${esc(t('r_use'))}">${r.id===p.rid?'✓':'○'}</button>
+      <input type="text" value="${esc(r.name)}" maxlength="30" data-act="renrout">
+      <span class="rmeta">${t('r_meta',{a:r.acts.length,m:r.acts.reduce((a,x)=>a+x.min,0)})}</span>
+      <button class="btn small danger" data-act="delrout">🗑</button></div>`).join('');
+  h+=`<div class="profrow"><input type="text" id="newRout" placeholder="${esc(t('r_namePh'))}" maxlength="30"></div>
+      <div class="btnrow"><button class="btn small primary" data-act="addrout-copy">${t('r_copy')}</button>
+      <button class="btn small" data-act="addrout-base">${t('r_base')}</button></div></div>`;
+  return h;
+}
+function drawSettings(){
+  const p=P(); loadVoices();
+  let h=`<div class="sec" style="border-top:0;margin-top:0"><h4>${t('s_lang')}</h4><div class="langsw left">${langHTML()}</div></div>`;
+  h+=`<div class="sec"><h4>${t('s_profiles')}</h4>`;
+  h+=S.profiles.map(x=>`<div class="profrow" data-pid="${x.id}">
+      <button class="sel ${x.id===S.active?'on':''}" data-act="selprof" title="${esc(t('s_useProfile'))}">${x.id===S.active?'✓':'○'}</button>
+      <input type="text" value="${esc(x.name)}" maxlength="24" data-act="renprof">
+      <button class="btn small danger" data-act="delprof">🗑</button></div>`).join('');
+  h+=`<div class="profrow"><input type="text" id="newProf" placeholder="${esc(t('s_newProfPh'))}" maxlength="24">
+      <button class="btn small primary" data-act="addprof">${t('s_add')}</button></div></div>`;
+
+  h+=routinesHTML(p);
+  h+=`<div class="sec"><h4>${t('s_schedule',{r:esc(activeRoutine(p).name)})}</h4><div class="total" id="totalTxt"></div>`;
+  h+=p.acts.map((a,i)=>`<div class="act" data-aid="${a.id}">
+      <div class="grid2">
+        <div class="field"><label>${t('f_icon')}</label><input type="text" data-f="icon" value="${esc(a.icon)}" maxlength="8"></div>
+        <div class="field"><label>${t('f_name')}</label><input type="text" data-f="name" value="${esc(a.name)}" maxlength="40"></div>
+        <div class="field"><label>${t('f_min')}</label><input type="number" data-f="min" value="${a.min}" min="1" max="120" inputmode="numeric"></div>
+        <div class="field"><label>${t('f_color')}</label><input type="color" data-f="color" value="${esc(a.color)}" style="width:100%;height:46px;border:0;background:none"></div>
+      </div>
+      <div class="field"><label>${t('f_items')}</label><textarea data-f="items" placeholder="🦆">${esc(a.items)}</textarea></div>
+      <div class="field"><label>${t('f_link')}</label><input type="url" data-f="link" value="${esc(a.link)}" placeholder="https://"></div>
+      <div class="tools">
+        <button class="btn small" data-act="up" ${i===0?'disabled':''}>▲</button>
+        <button class="btn small" data-act="down" ${i===p.acts.length-1?'disabled':''}>▼</button>
+        <button class="btn small danger" data-act="delact">${t('remove')}</button>
+      </div></div>`).join('');
+  h+=`<button class="btn small primary" data-act="addact">${t('addAct')}</button>
+      <button class="btn small" data-act="restore">${t('restore')}</button></div>`;
+
+  const sel=pickVoice();
+  const vopts = voices.map(v=>`<option value="${esc(v.voiceURI)}" ${(sel&&sel.voiceURI===v.voiceURI)?'selected':''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('');
+  h+=`<div class="sec"><h4>${t('s_voice')}</h4>
+      <label class="switch"><input type="checkbox" id="voiceChk" ${S.voiceOn?'checked':''}> ${t('voiceChk')}</label>
+      ${hasTTS && voices.length ? `<div class="field" style="max-width:420px"><label>${t('voiceLbl')}</label><select id="voiceSel">${vopts}</select></div>
+        <button class="btn small" data-act="testvoice">${t('testVoice')}</button>`
+        : `<div class="total">${t('noVoices')}</div>`}
+      <label class="switch" style="margin-top:12px"><input type="checkbox" id="soundChk" ${S.sound?'checked':''}> ${t('soundChk')}</label></div>`;
+
+  h+=`<div class="sec"><h4>${t('s_general')}</h4>
+      <div class="field" style="margin-top:6px;max-width:260px"><label>${t('pinLbl')}</label>
+        <input type="password" id="newPin" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="••••"></div>
+      <div class="btnrow">
+        <button class="btn small" data-act="savepin">${t('savePin')}</button>
+        <button class="btn small danger" data-act="clearhist">${t('clearHist',{n:esc(p.name)})}</button>
+        <button class="btn small danger" data-act="resetchecks">${t('resetChecks')}</button>
+      </div></div>`;
+  $('#setBody').innerHTML=h; updTotal();
+}
+function updTotal(){ const el=$('#totalTxt'); if(el){ const m=totalSec()/60; el.textContent=t('s_total',{m:m})+(m===60?t('s_totalOk'):t('s_totalAdj')); } }
+
+$('#setBody').addEventListener('input',e=>{
+  const tg=e.target, p=P();
+  const ar=tg.closest('.act');
+  if(ar && tg.dataset.f){
+    const a=p.acts.find(x=>x.id===ar.dataset.aid); if(!a) return;
+    if(tg.dataset.f==='min'){ a.min=Math.max(1,Math.min(120,parseInt(tg.value)||1)); updTotal(); }
+    else a[tg.dataset.f]=tg.value;
+    dirty=true; save();
+  }
+  if(tg.dataset.act==='renprof'){
+    const x=S.profiles.find(q=>q.id===tg.closest('.profrow').dataset.pid);
+    if(x){ x.name=tg.value.trim()||'Peque'; save(); }
+  }
+  if(tg.dataset.act==='renrout'){
+    const x=p.routines.find(q=>q.id===tg.closest('.profrow').dataset.rid);
+    if(x){ x.name=tg.value.trim()||x.name; save(); }
+  }
+});
+$('#setBody').addEventListener('change',e=>{
+  const tg=e.target;
+  if(tg.id==='soundChk'){ S.sound=tg.checked; save(); }
+  if(tg.id==='voiceChk'){ S.voiceOn=tg.checked; save(); }
+  if(tg.id==='voiceSel'){ S.voiceBy[S.lang]=tg.value; save(); say(t('v_test2',{n:P().name}),{force:true}); }
+});
+$('#setBody').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b||!b.dataset.act) return;
+  const act=b.dataset.act, p=P();
+  const pr=b.closest('.profrow'), ar=b.closest('.act');
+  const ai = ar ? p.acts.findIndex(x=>x.id===ar.dataset.aid) : -1;
+  switch(act){
+    case 'lang': setLang(b.dataset.lang); return;
+    case 'testvoice': say(t('v_test',{n:p.name}),{force:true}); return;
+    case 'selrout': p.rid=pr.dataset.rid; dirty=true; break;
+    case 'delrout':
+      if(p.routines.length<2){ alert(t('al_oneRout')); return; }
+      if(!confirm(t('al_delRout'))) return;
+      p.routines=p.routines.filter(x=>x.id!==pr.dataset.rid);
+      if(!p.routines.some(x=>x.id===p.rid)) p.rid=p.routines[0].id; dirty=true; break;
+    case 'addrout-copy': case 'addrout-base':{
+      const nm=$('#newRout').value.trim();
+      const nr={id:uid(),name:nm||t('r_def',{n:p.routines.length+1}),acts:act==='addrout-copy'?cloneActs(p.acts):defaultActs(S.lang)};
+      p.routines.push(nr); p.rid=nr.id; dirty=true; break; }
+    case 'selprof': S.active=pr.dataset.pid; dirty=true; break;
+    case 'delprof':
+      if(S.profiles.length<2){ alert(t('al_oneProf')); return; }
+      if(!confirm(t('al_delProf'))) return;
+      S.profiles=S.profiles.filter(x=>x.id!==pr.dataset.pid);
+      if(!S.profiles.some(x=>x.id===S.active)) S.active=S.profiles[0].id; dirty=true; break;
+    case 'addprof':{
+      const n=$('#newProf').value.trim(); if(!n){ $('#newProf').focus(); return; }
+      const np=newProfile(n, cloneActs(p.acts), S.lang, activeRoutine(p).name); np.routines[0].k=activeRoutine(p).k;
+      S.profiles.push(np); S.active=np.id; dirty=true; break; }
+    case 'up': if(ai>0){ [p.acts[ai-1],p.acts[ai]]=[p.acts[ai],p.acts[ai-1]]; dirty=true; } break;
+    case 'down': if(ai>=0&&ai<p.acts.length-1){ [p.acts[ai+1],p.acts[ai]]=[p.acts[ai],p.acts[ai+1]]; dirty=true; } break;
+    case 'delact':
+      if(p.acts.length<2){ alert(t('al_oneAct')); return; }
+      if(!confirm(t('al_delAct'))) return;
+      p.acts.splice(ai,1); dirty=true; break;
+    case 'addact': p.acts.push({id:uid(),icon:'⭐',name:t('newAct'),min:5,color:'#6C8CFF',items:'',link:''}); dirty=true; break;
+    case 'restore':
+      if(!confirm(t('al_restore'))) return;
+      p.acts=defaultActs(S.lang); p.checks={date:dayStr(),done:[]}; dirty=true; break;
+    case 'savepin':{
+      const v=$('#newPin').value;
+      if(!/^\d{4}$/.test(v)){ alert(t('al_pin4')); return; }
+      S.pin=v; save(); alert(t('al_pinSaved')); $('#newPin').value=''; return; }
+    case 'clearhist':
+      if(!confirm(t('al_clear',{n:p.name}))) return;
+      p.history={}; break;
+    case 'resetchecks': p.checks={date:dayStr(),done:[]}; break;
+    default: return;
+  }
+  save(); drawSettings();
+});
+
+/* ---------- inicio ---------- */
+rollDay(); save(); applyStatic(); renderAll(); tick(); openUsers();
+})();
+</script>
+</body>
+</html>
