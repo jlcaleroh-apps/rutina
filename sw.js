@@ -1,7 +1,7 @@
 /* Mi Rutina: funciona sin internet.
    - La página se pide primero a la red (para recibir cambios nuevos) y, si no hay internet, se usa la copia guardada.
    - Los íconos y el manifiesto se sirven desde la copia guardada. */
-const CACHE = 'mi-rutina-v3';
+const CACHE = 'mi-rutina-v4';
 const FILES = [
   './',
   './index.html',
