@@ -1309,7 +1309,7 @@ $('#setBody').addEventListener('click',e=>{
 });
 
 /* ---------- ayuda ---------- */
-function openHelp(){ $('#helpBody').innerHTML=t('help_html'); $('#helpOv').classList.add('show'); }
+function openHelp(){ $('#helpBody').innerHTML=t('help_html')+`<p style="margin-top:18px"><b>${S.lang==='en'?'Contact':'Contacto'}:</b> <a href="mailto:jlcaleroh@gmail.com">jlcaleroh@gmail.com</a></p>`; $('#helpOv').classList.add('show'); }
 $('#helpBtn').onclick=openHelp;
 $('#userHelp').onclick=openHelp;
 $('#helpClose').onclick=()=>{ $('#helpOv').classList.remove('show'); if(!S.helpSeen){ S.helpSeen=true; save(); } };
