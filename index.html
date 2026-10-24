@@ -376,6 +376,7 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
   </div>
 </div>
 
+<script src="respaldo.js"></script>
 <script>
 (function(){
 'use strict';
@@ -635,6 +636,12 @@ function load(){
   return r;
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+// Respaldo: componente común respaldo.js (igual en todas las apps de jlcaleroh-apps)
+if(window.Respaldo) Respaldo.iniciar({
+  app:'rutina', nombre:'Mi Rutina', clave:k=>k===KEY,
+  idioma:()=> (typeof S!=='undefined' && S && S.lang) || 'es', antes:()=>save(), claseBoton:'btn small',
+  contarNinos:()=> (typeof S!=='undefined' && S && S.profiles) ? S.profiles.length : null,
+});
 const P = () => S.profiles.find(p=>p.id===S.active) || S.profiles[0];
 function rollDay(){
   S.profiles.forEach(p=>{ if(p.checks.date!==dayStr()) p.checks={date:dayStr(),done:[]}; });
@@ -1175,6 +1182,7 @@ function drawSettings(){
       <label class="switch" style="margin-top:12px"><input type="checkbox" id="soundChk" ${S.sound?'checked':''}> ${t('soundChk')}</label></div>`;
 
   h+=`<div class="sec"><h4>${t('s_general')}</h4>
+      <div id="rspBox" style="margin-bottom:16px"></div>
       <div class="total">${S.pin?t('pinOn'):t('pinOff')}</div>
       <div class="field" style="margin-top:6px;max-width:260px"><label>${t('pinLbl')}</label>
         <input type="password" id="newPin" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="••••"></div>
@@ -1185,6 +1193,7 @@ function drawSettings(){
         <button class="btn small danger" data-act="resetchecks">${t('resetChecks')}</button>
       </div></div>`;
   $('#setBody').innerHTML=h; updTotal(); foldSections(p);
+  if(window.Respaldo) Respaldo.montar($('#rspBox'));
 }
 // secciones plegables: solo se abre lo que el adulto toca (menos ruido visual)
 const openSecs=new Set(['sched']); let openAct=null;
