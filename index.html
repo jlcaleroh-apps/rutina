@@ -377,6 +377,7 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
 </div>
 
 <script src="respaldo.js"></script>
+<script src="adulto.js"></script>
 <script>
 (function(){
 'use strict';
@@ -1006,7 +1007,8 @@ $('#userGrid').addEventListener('click',e=>{
 $('#userGrid').addEventListener('keydown',e=>{ if(e.target.id==='uNewName' && e.key==='Enter') addUser(); });
 $('#userLang').addEventListener('click',e=>{ const b=e.target.closest('[data-lang]'); if(b) setLang(b.dataset.lang); });
 $('#who').onclick=openUsers;
-$('#userAdult').onclick=()=>requireAuth(()=>{ $('#userOv').classList.remove('show'); fromUsers=true; openSettings(); });
+// gesto común adulto.js: mantener presionado 2 segundos; el PIN (si está activo) se pide después
+Adulto.mantener($('#userAdult'),()=>requireAuth(()=>{ $('#userOv').classList.remove('show'); fromUsers=true; openSettings(); }),{idioma:()=>S.lang});
 
 /* ---------- PIN (se recuerda 5 minutos) ---------- */
 let pinBuf='', pending=null, unlockedUntil=0;
@@ -1035,8 +1037,8 @@ keysEl.addEventListener('click',e=>{
   }
 });
 $('#pinCancel').onclick=()=>{ pending=null; $('#pinOv').classList.remove('show'); };
-$('#gear').onclick=()=>requireAuth(openSettings);
-$('#adultPill').onclick=()=>requireAuth(openAdult);
+Adulto.mantener($('#gear'),()=>requireAuth(openSettings),{idioma:()=>S.lang});
+Adulto.mantener($('#adultPill'),()=>requireAuth(openAdult),{idioma:()=>S.lang});
 
 /* ---------- panel del adulto ---------- */
 function adultRoutinesHTML(){
