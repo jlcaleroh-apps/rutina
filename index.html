@@ -378,6 +378,8 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
 
 <script src="respaldo.js"></script>
 <script src="adulto.js"></script>
+<script src="voz.js"></script>
+<script src="pantalla.js"></script>
 <script>
 (function(){
 'use strict';
@@ -604,7 +606,7 @@ function newProfile(name, acts, lang, rname){
 
 /* ---------- datos ---------- */
 const KEY = 'timetimer.v1';
-S = load();
+S = load(); migrarVoz();
 function load(){
   let r=null;
   try{ r = JSON.parse(localStorage.getItem(KEY)); }catch(e){}
@@ -649,6 +651,21 @@ function load(){
   return r;
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+// Prueba de voz: componente común voz.js (igual en todas las apps de jlcaleroh-apps)
+if(window.Voz) Voz.iniciar({
+  app:'rutina', idioma:()=> (typeof S!=='undefined' && S && S.lang) || 'es', claseBoton:'btn small',
+  ejemplos:()=> (typeof S!=='undefined' && S) ? P().acts.slice(0,6).map(a=>({t:(a.icon?a.icon+' ':'')+a.name, d:a.name})) : [],
+  frase:()=> t('v_test',{n:P().name}),
+  decir:x=>say(x,{force:true}),
+});
+// Una sola vez: la voz elegida antes (S.voiceBy) pasa a voz.js
+function migrarVoz(){
+  try{
+    if(!window.Voz || localStorage.getItem('voz:rutina') || !S || !S.voiceBy) return;
+    const q={}; ['es','en'].forEach(L=>{ if(S.voiceBy[L]) q[L]={uri:S.voiceBy[L]}; });
+    if(Object.keys(q).length) localStorage.setItem('voz:rutina', JSON.stringify(q));
+  }catch(e){}
+}
 // Respaldo: componente común respaldo.js (igual en todas las apps de jlcaleroh-apps)
 if(window.Respaldo) Respaldo.iniciar({
   app:'rutina', nombre:'Mi Rutina', clave:k=>k===KEY,
@@ -719,7 +736,8 @@ function prevAct(){
   else setElapsed(b[idx-1].s);
 }
 function nextAct(){ const i=curIndex(), b=bounds(); if(i<b.length) setElapsed(b[i].e); }
-function releaseWake(){ if(wake){ try{wake.release()}catch(e){} wake=null; } }
+// pantalla.js (componente común): fija mientras corre el reloj, automática el resto del tiempo
+function releaseWake(){ if(window.Pantalla) Pantalla.fijar(false); }
 function resetClock(){ running=false; base=0; releaseWake(); }
 
 /* ---------- sonido y voz ---------- */
@@ -754,6 +772,7 @@ function loadVoices(){
 }
 if(hasTTS){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
 function pickVoice(){
+  const elegida=window.Voz && Voz.elegida(S.lang); if(elegida) return elegida;   // voz elegida en Prueba de voz (voz.js)
   const id=S.voiceBy[S.lang];
   const pref = S.lang==='en' ? [/en[-_]US/i,/en[-_]GB/i] : [/es[-_]MX/i,/es[-_]US/i];
   return voices.find(v=>v.voiceURI===id)
@@ -769,7 +788,7 @@ function say(text, opts){
       if(speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
       const u=new SpeechSynthesisUtterance(text), v=pickVoice();
       if(v){ u.voice=v; u.lang=v.lang; } else u.lang = S.lang==='en' ? 'en-US' : 'es-MX';
-      u.rate=.88; u.pitch=1.05;
+      u.rate=.88*(window.Voz?Voz.velocidad(S.lang):1); u.pitch=1.05;
       speechSynthesis.speak(u);
     }catch(e){}
   };
@@ -781,8 +800,8 @@ function announceActivity(idx){
   const pr=t('v_praise');
   say(t('v_next',{p:pr[praiseN++%pr.length],a:a.name}),{delay:700});
 }
-async function lockScreen(){ try{ if(navigator.wakeLock) wake=await navigator.wakeLock.request('screen'); }catch(e){} }
-document.addEventListener('visibilitychange',()=>{ if(running && document.visibilityState==='visible') lockScreen(); });
+function lockScreen(){ if(window.Pantalla) Pantalla.fijar(true); }
+if(window.Pantalla) Pantalla.iniciar({minutos:3});
 
 /* ---------- reloj SVG ---------- */
 const R=102; // radio del sector de color
@@ -1190,9 +1209,7 @@ function drawSettings(){
   const vopts = voices.map(v=>`<option value="${esc(v.voiceURI)}" ${(sel&&sel.voiceURI===v.voiceURI)?'selected':''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('');
   h+=`<div class="sec"><h4>${t('s_voice')}</h4>
       <label class="switch"><input type="checkbox" id="voiceChk" ${S.voiceOn?'checked':''}> ${t('voiceChk')}</label>
-      ${hasTTS && voices.length ? `<div class="field" style="max-width:420px"><label>${t('voiceLbl')}</label><select id="voiceSel">${vopts}</select></div>
-        <button class="btn small" data-act="testvoice">${t('testVoice')}</button>`
-        : `<div class="total">${t('noVoices')}</div>`}
+      <div id="vozBox" style="margin-top:10px"></div>
       <label class="switch" style="margin-top:12px"><input type="checkbox" id="soundChk" ${S.sound?'checked':''}> ${t('soundChk')}</label></div>`;
 
   h+=`<div class="sec"><h4>${t('s_general')}</h4>
@@ -1208,6 +1225,7 @@ function drawSettings(){
       </div></div>`;
   $('#setBody').innerHTML=h; updTotal(); foldSections(p);
   if(window.Respaldo) Respaldo.montar($('#rspBox'));
+  if(window.Voz) Voz.montar($('#vozBox'));
 }
 // secciones plegables: solo se abre lo que el adulto toca (menos ruido visual)
 const openSecs=new Set(['sched']); let openAct=null;
