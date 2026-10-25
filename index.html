@@ -380,6 +380,7 @@ header h1{font-size:clamp(22px,3.4vw,34px);margin:0;flex:1;line-height:1.1;min-w
 <script src="adulto.js"></script>
 <script src="voz.js"></script>
 <script src="pantalla.js"></script>
+<script src="apps.js"></script>
 <script>
 (function(){
 'use strict';
@@ -1341,7 +1342,7 @@ $('#setBody').addEventListener('click',e=>{
 });
 
 /* ---------- ayuda ---------- */
-function openHelp(){ $('#helpBody').innerHTML=t('help_html')+`<h4>✉️ ${S.lang==='en'?'Contact':'Contacto'}</h4><p><a href="mailto:jlcaleroh@gmail.com">jlcaleroh@gmail.com</a></p>`; $('#helpOv').classList.add('show'); }
+function openHelp(){ $('#helpBody').innerHTML=t('help_html')+`<h4>📱 ${S.lang==='en'?'Other apps':'Otras apps'}</h4><div id="otrasApps"></div><h4>✉️ ${S.lang==='en'?'Contact':'Contacto'}</h4><p><a href="mailto:jlcaleroh@gmail.com">jlcaleroh@gmail.com</a></p>`; if(window.Apps) Apps.montar($('#otrasApps'),{actual:'rutina',idioma:S.lang}); $('#helpOv').classList.add('show'); }
 $('#helpBtn').onclick=openHelp;
 $('#userHelp').onclick=openHelp;
 $('#helpClose').onclick=()=>{ $('#helpOv').classList.remove('show'); if(!S.helpSeen){ S.helpSeen=true; save(); } };

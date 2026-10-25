@@ -1,13 +1,13 @@
 /* Mi Rutina: funciona sin internet.
    - La página se pide primero a la red (para recibir cambios nuevos) y, si no hay internet, se usa la copia guardada.
    - Los íconos y el manifiesto se sirven desde la copia guardada. */
-const CACHE = 'mi-rutina-v7';
+const CACHE = 'mi-rutina-v8';
 const FILES = [
   './',
   './index.html',
   './manifest.webmanifest',
   './respaldo.js', './voz.js',
-  './adulto.js', './pantalla.js',
+  './adulto.js', './pantalla.js', './apps.js',
   './icons/apple-touch-icon.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
